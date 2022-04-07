@@ -25,8 +25,14 @@ The columns:
 
 * `Efficiency`
 
+* `Drive`
+
+* `NumberofSeats`  
+
 * `FastChargeSpeed`
 
+    This column describes whether the electric car supports fast charging or not.
+   
 * `PriceinGermany`
 
 * `PriceinUK`
