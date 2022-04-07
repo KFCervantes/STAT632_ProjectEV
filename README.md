@@ -39,4 +39,4 @@ Here is a short description of each column:
 
 * `PriceinUK`
 
-All are stored as strings, but clearly contain numeric substrings that may be useful. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA.
+Some of these columns are stored as strings, but clearly contain numeric substrings that may be useful. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to `NA` when the numeric parts are parsed out.
