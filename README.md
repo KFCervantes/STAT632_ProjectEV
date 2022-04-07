@@ -10,7 +10,6 @@ Here is a short description of each column:
 
 * `Subtitle`
 
-
     This column contanins information about the type of electric vehicle as well as the kWh of the battery. The kWh part of the column gives information about the battery capacity of the car.
 
 * `Acceleration`
@@ -29,7 +28,9 @@ Here is a short description of each column:
 
 * `Drive`
 
-* `NumberofSeats`  
+* `NumberofSeats`
+
+    This is the number of seats in the vehicle.
 
 * `FastChargeSpeed`
 
@@ -37,6 +38,10 @@ Here is a short description of each column:
    
 * `PriceinGermany`
 
+    This is the price of the car in Germany.
+
 * `PriceinUK`
+
+    This is the price of the car in the United Kingdom.
 
 Some of these columns are stored as strings, but clearly contain numeric substrings that may be useful. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to `NA` when the numeric parts are parsed out.
