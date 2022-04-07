@@ -2,9 +2,11 @@
 
 The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns.
 
-The column `Name` is the name of the vehicle and will not be used in any of the formulas. However it is helpful as an identifier so will be kept in the data.
+Here is a short description of each column:
 
-The columns:
+* `Name`
+
+    This is the name of the vehicle and will not be used in any of the formulas. However it is helpful as an identifier so will be kept in the data.
 
 * `Subtitle`
 
