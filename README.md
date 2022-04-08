@@ -38,7 +38,7 @@ Here is a short description of each column:
 
 * `FastChargeSpeed`
 
-    This column describes whether the electric vehicle supports fast charging or not.
+    This column gives the amount of distance the electric vehicle can travel when fast-charged for an hour.
    
 * `PriceinGermany`
 
