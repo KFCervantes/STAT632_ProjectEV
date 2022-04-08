@@ -22,9 +22,11 @@ Here is a short description of each column:
 
 * `Range`
 
-    This is the maximum distance the car can travel on a full charge.
+    This is the maximum distance the electric vehicle can travel on a full charge.
 
 * `Efficiency`
+
+    This column describes how much energy the electric vehicle has consumed over how many miles.
 
 * `Drive`
 
