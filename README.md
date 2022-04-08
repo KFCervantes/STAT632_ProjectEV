@@ -28,13 +28,15 @@ Here is a short description of each column:
 
 * `Drive`
 
+    This is the drivetrains category of the electric vehicle.
+
 * `NumberofSeats`
 
     This is the number of seats in the vehicle.
 
 * `FastChargeSpeed`
 
-    This column describes whether the electric car supports fast charging or not.
+    This column describes whether the electric vehicle supports fast charging or not.
    
 * `PriceinGermany`
 
