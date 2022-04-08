@@ -1,6 +1,6 @@
 # STAT632_ProjectEV
 
-The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns.
+The dataset we used was the [“Cheapest Electric Cars” from Kaggle user KOUSTUBHK](https://www.kaggle.com/datasets/kkhandekar/cheapest-electric-cars). This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns.
 
 Here is a short description of each column:
 
