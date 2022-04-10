@@ -1,5 +1,5 @@
 library(magrittr)
-library(tidyverse)
+library(stringr)
 
 # load in data
 data <- "Dataset/Cheapestelectriccars-EVDatabase.csv" %>%
