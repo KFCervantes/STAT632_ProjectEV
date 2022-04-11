@@ -41,3 +41,12 @@ data[c("TopSpeed", "Range", "Efficiency", "FastChargeSpeed", "PriceinGermany", "
       # convert string to int
       as.integer
   )
+
+# write cleaned data into csv file
+data %>%
+  write.csv(
+    "Dataset/cleaned_data.csv",
+    
+    # write without numeric index
+    row.names = F
+  )
