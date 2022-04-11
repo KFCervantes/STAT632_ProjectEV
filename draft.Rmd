@@ -1,6 +1,6 @@
 ---
 title: "Draft"
-output: html_document
+output: github_document
 date: "`r Sys.Date()`"
 ---
 
@@ -24,7 +24,6 @@ First, variables will need to be selected. In order to do this, a correlation ma
 ```{r}
 data %>%
   select_if(is.numeric) %>%
-  drop_na %>%
-  cor %>%
+  cor(use = "pairwise.complete.obs") %>%
   kable
 ```
