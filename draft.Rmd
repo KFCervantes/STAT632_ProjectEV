@@ -1,0 +1,30 @@
+---
+title: "Draft"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(knitr)
+library(magrittr)
+library(tidyr)
+data <- "Dataset/cleaned_data.csv" %>%
+  read.csv
+```
+
+This document is meant to draft out stuff and select variables.
+
+First, variables will need to be selected. In order to do this, a correlation matrix will be used to pick which variables will be kept before doing linear regression.
+
+```{r}
+data %>%
+  select_if(is.numeric) %>%
+  drop_na %>%
+  cor %>%
+  kable
+```
