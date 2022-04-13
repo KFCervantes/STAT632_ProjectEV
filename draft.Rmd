@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(dplyr)
+library(ggplot2)
 library(knitr)
 library(magrittr)
 library(tidyr)
@@ -19,11 +20,38 @@ data <- "Dataset/cleaned_data.csv" %>%
 
 This document is meant to draft out stuff and select variables.
 
-First, variables will need to be selected. In order to do this, a correlation matrix will be used to pick which variables will be kept before doing linear regression.
+First, variables will need to be selected. In order to do this, a correlation matrix will be used to pick which variables will be kept before doing linear regression. For our purposes, we will define highly correlated as having an absolute correlation higher than 0.7.
 
 ```{r}
 data %>%
   select_if(is.numeric) %>%
   cor(use = "pairwise.complete.obs") %>%
   kable
+```
+From this matrix, we can see that `PriceinUK` is highly correlated with the following:
+
+* `Subtitle`
+
+* `TopSpeed`
+
+* `PriceinGermany`
+
+`PriceinGermany` may be considered a different version of the response, but `Subtitle` and `TopSpeed` may be significant predictors. For this reason, other predictors correlated with these may be dropped. These predictors are:
+
+* `Range`
+
+* `Acceleration`
+
+* `FastChargeSpeed`
+
+Next a scatterplot matrix will be used to find potential transformations.
+
+```{r}
+(PriceinUK ~ .) %>%
+  pairs(
+    data %>%
+      select_if(is.numeric) %>%
+      select(-c("PriceinGermany", "Range", "Acceleration", "FastChargeSpeed"))
+  )
+
 ```
