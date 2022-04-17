@@ -1,6 +1,6 @@
 Draft
 ================
-2022-04-14
+2022-04-16
 
 ``` r
 library(car)
@@ -271,7 +271,13 @@ appropriate. A new version of the model with this transformation will be
 used and analyzed.
 
 ``` r
-lm3 <- (I(PriceinUK^-0.5) ~ poly(Subtitle, 2, raw = T) + I(TopSpeed^2) + log(Efficiency) + log(NumberofSeats)) %>%
+lm3 <- (
+  (1 / sqrt(PriceinUK)) ~
+    poly(Subtitle, 2, raw = T) +
+    I(TopSpeed^2) +
+    log(Efficiency) +
+    log(NumberofSeats)
+  ) %>%
   lm(lm_data) %>%
   step(
     trace = 0,
@@ -284,7 +290,7 @@ lm3 %>%
 
     ## 
     ## Call:
-    ## lm(formula = I(PriceinUK^-0.5) ~ poly(Subtitle, 2, raw = T) + 
+    ## lm(formula = (1/sqrt(PriceinUK)) ~ poly(Subtitle, 2, raw = T) + 
     ##     I(TopSpeed^2) + log(Efficiency), data = lm_data)
     ## 
     ## Residuals:
@@ -314,24 +320,14 @@ lm3 %>%
 
 This process has resulted in the following model:
 
-![
+$$
 \\begin{align\*}
-\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta_0\\\\
-+& \\beta_1 \\texttt{Subtitle} \\\\
-+& \\beta_2 \\texttt{Subtitle}^2 \\\\
-+& \\beta_3 \\texttt{TopSpeed}^2 \\\\
-+& \\beta_4 \\ln \\texttt{Efficiency} \\\\
-+& \\beta_5 \\ln \\texttt{NumberofSeats}
+\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta\_0\\\\
++& \\beta\_1 \\texttt{Subtitle} \\\\
++& \\beta\_2 \\texttt{Subtitle}^2 \\\\
++& \\beta\_3 \\texttt{TopSpeed}^2 \\\\
++& \\beta\_4 \\ln \\texttt{Efficiency} \\\\
++& \\beta\_5 \\ln \\texttt{NumberofSeats} \\\\
 +& \\epsilon
 \\end{align\*}
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%0A%5Cbegin%7Balign%2A%7D%0A%5Cfrac%7B1%7D%7B%5Csqrt%7B%5Ctexttt%7BPriceinUK%7D%7D%7D%20%3D%20%26%20%5Cbeta_0%5C%5C%0A%2B%26%20%5Cbeta_1%20%5Ctexttt%7BSubtitle%7D%20%5C%5C%0A%2B%26%20%5Cbeta_2%20%5Ctexttt%7BSubtitle%7D%5E2%20%5C%5C%0A%2B%26%20%5Cbeta_3%20%5Ctexttt%7BTopSpeed%7D%5E2%20%5C%5C%0A%2B%26%20%5Cbeta_4%20%5Cln%20%5Ctexttt%7BEfficiency%7D%20%5C%5C%0A%2B%26%20%5Cbeta_5%20%5Cln%20%5Ctexttt%7BNumberofSeats%7D%0A%2B%26%20%5Cepsilon%0A%5Cend%7Balign%2A%7D%0A "
-\begin{align*}
-\frac{1}{\sqrt{\texttt{PriceinUK}}} = & \beta_0\\
-+& \beta_1 \texttt{Subtitle} \\
-+& \beta_2 \texttt{Subtitle}^2 \\
-+& \beta_3 \texttt{TopSpeed}^2 \\
-+& \beta_4 \ln \texttt{Efficiency} \\
-+& \beta_5 \ln \texttt{NumberofSeats}
-+& \epsilon
-\end{align*}
-")
+$$

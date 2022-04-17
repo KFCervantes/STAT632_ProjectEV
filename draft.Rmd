@@ -130,7 +130,13 @@ lm2 %>%
 This indicates that an inverse square root transformation may be appropriate. A new version of the model with this transformation will be used and analyzed.
 
 ```{r}
-lm3 <- (I(PriceinUK^-0.5) ~ poly(Subtitle, 2, raw = T) + I(TopSpeed^2) + log(Efficiency) + log(NumberofSeats)) %>%
+lm3 <- (
+  (1 / sqrt(PriceinUK)) ~
+    poly(Subtitle, 2, raw = T) +
+    I(TopSpeed^2) +
+    log(Efficiency) +
+    log(NumberofSeats)
+  ) %>%
   lm(lm_data) %>%
   step(
     trace = 0,
@@ -153,7 +159,7 @@ $$
 +& \beta_2 \texttt{Subtitle}^2 \\
 +& \beta_3 \texttt{TopSpeed}^2 \\
 +& \beta_4 \ln \texttt{Efficiency} \\
-+& \beta_5 \ln \texttt{NumberofSeats}
++& \beta_5 \ln \texttt{NumberofSeats} \\
 +& \epsilon
 \end{align*}
 $$
