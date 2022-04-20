@@ -9,16 +9,38 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The purpose of this was to test if the model will work in a pdf document as opposed to a github document.
+# Final Model
+
+```{r}
+library(magrittr)
+library(tidyr)
+data <- read.csv("Dataset/cleaned_data.csv") %>%
+  drop_na
+final_model <- (
+    log(PriceinUK) ~
+      log(Subtitle) +
+      poly(Acceleration, 2, raw = T) + 
+      poly(TopSpeed, 2, raw = T) +
+      log(Efficiency) +
+      factor(NumberofSeats)
+) %>%
+  lm(data)
+
+final_model %>%
+  summary
+
+final_model %>%
+  plot(which = 1:2)
+```
+
+This has equation
 
 \begin{align*}
-\frac{1}{\sqrt{\texttt{PriceinUK}}} = & \beta_0\\
-+& \beta_1 \texttt{Subtitle} \\
-+& \beta_2 \texttt{Subtitle}^2 \\
-+& \beta_3 \texttt{TopSpeed}^2 \\
-+& \beta_4 \ln \texttt{Efficiency} \\
-+& \beta_5 \ln \texttt{NumberofSeats} \\
-+& \epsilon
+\ln \texttt{PriceinUK} &= \beta_0 \\
+&+ \beta_1 \ln \texttt{Subtitle} \\
+&+ \beta_2 \texttt{Acceleration} + \beta_3 \texttt{Acceleration}^2 \\
+&+ \beta_4 \texttt{TopSpeed} + \beta_5 \texttt{TopSpeed}^2 \\
+&+ \beta_6 \ln \texttt{Efficiency} \\
+&+ \beta_7 \left( \texttt{NumberofSeats} == 5 \right) + \beta_8 \left( \texttt{NumberofSeats} == 7 \right) \\
+&+ \epsilon
 \end{align*}
-
-Fortunately, this seems to have worked.

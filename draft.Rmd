@@ -227,11 +227,7 @@ data %>%
   cor(use = "pairwise.complete.obs")
 ```
 
-In order to select the variables, I went in order of left to right. Since `Subtitle` is highly correllated with `Range`, I dropped `Range`.
-
-Since `TopSpeed` is highly correlated with `Accelaration`, I also dropped that from the model.
-
-Now that these were dropped, I decided to visualize a scatterplot matrix.
+Before dropping predictors, It may also help to visualize them to see if they behave similarly.
 
 ```{r}
 (PriceinUK ~ .) %>%
@@ -242,7 +238,58 @@ Now that these were dropped, I decided to visualize a scatterplot matrix.
   )
 ```
 
+Since `Subtitle` and `Range` yield similar plots, and are highly correlated, one of those should be dropped. Since `Subtitle` has a stronger correlation with the response than `Range`, `Range` will be dropped.
 
+`Accelaration` and `TopSpeed` are also highly correlated. However, it is hard to visualize if the plots are similar since the correlation is negative.
+
+```{r}
+data %>%
+  summary
+```
+
+A full model will be fitted first. This is to test the sigificance of predictors that will be dropped later.
+
+```{r}
+lm_data <- data %>%
+  drop_na
+
+full_model <- (
+  log(PriceinUK) ~
+    log(Subtitle) +
+    poly(Acceleration, 2, raw = T) +
+    poly(TopSpeed, 2, raw = T) +
+    log(Efficiency) +
+    log(FastChargeSpeed) +
+    factor(NumberofSeats) +
+    Drive
+) %>%
+  lm(lm_data)
+
+full_model %>%
+  summary
+```
+
+
+
+```{r}
+reduced_model <- full_model %>%
+  step(
+    trace = 0,
+    k = lm_data %>% nrow %>% log
+  )
+reduced_model %>% summary
+```
+
+Now a partial $F$-test will be conducted to see if any of the dropped predictors may be significant.
+
+```{r}
+anova(reduced_model, full_model)
+```
+
+```{r}
+reduced_model %>%
+  plot(which = 1:2)
+```
 
 ```{r}
 lm5 <- (
@@ -253,9 +300,30 @@ lm5 <- (
     log(FastChargeSpeed) +
     NumberofSeats
 ) %>%
-  lm(lm_data3)
+  lm(data)
 lm5 %>%
   summary
 lm5 %>%
+  plot(which = 1:2)
+```
+
+# Final Model
+This will now be the final model
+
+```{r}
+final_model <- (
+    log(PriceinUK) ~
+      log(Subtitle) +
+      poly(Acceleration, 2, raw = T) + 
+      poly(TopSpeed, 2, raw = T) +
+      log(Efficiency) +
+      factor(NumberofSeats)
+) %>%
+  lm(lm_data)
+
+final_model %>%
+  summary
+
+final_model %>%
   plot(which = 1:2)
 ```
