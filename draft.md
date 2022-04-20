@@ -1,6 +1,6 @@
 Draft
 ================
-2022-04-19
+2022-04-20
 
 ``` r
 library(car)
@@ -322,12 +322,12 @@ This process has resulted in the following model:
 
 $$
 \\begin{align\*}
-\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta_0\\\\
-+& \\beta_1 \\texttt{Subtitle} \\\\
-+& \\beta_2 \\texttt{Subtitle}^2 \\\\
-+& \\beta_3 \\texttt{TopSpeed}^2 \\\\
-+& \\beta_4 \\ln \\texttt{Efficiency} \\\\
-+& \\beta_5 \\ln \\texttt{NumberofSeats} \\\\
+\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta\_0\\\\
++& \\beta\_1 \\texttt{Subtitle} \\\\
++& \\beta\_2 \\texttt{Subtitle}^2 \\\\
++& \\beta\_3 \\texttt{TopSpeed}^2 \\\\
++& \\beta\_4 \\ln \\texttt{Efficiency} \\\\
++& \\beta\_5 \\ln \\texttt{NumberofSeats} \\\\
 +& \\epsilon
 \\end{align\*}
 $$
@@ -437,3 +437,52 @@ lm4 %>%
 
 This seems to indicate that an inverse cube root transformation may
 help.
+
+# Old Model
+
+``` r
+lm_data3 <- data[, c("Name", "Subtitle", "Acceleration", "Efficiency", "FastChargeSpeed", "Drive", "NumberofSeats", "PriceinUK")]
+lm5 <- (
+  log(PriceinUK) ~
+    log(Subtitle) +
+    poly(Acceleration, 2, raw = T) +
+    log(Efficiency) +
+    log(FastChargeSpeed) +
+    NumberofSeats
+) %>%
+  lm(lm_data3)
+lm5 %>%
+  summary
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = ., data = lm_data3)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.66487 -0.10347  0.00264  0.07268  0.55502 
+    ## 
+    ## Coefficients:
+    ##                                  Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                      6.537553   0.814135   8.030 6.15e-13 ***
+    ## log(Subtitle)                    0.367377   0.091370   4.021 9.96e-05 ***
+    ## poly(Acceleration, 2, raw = T)1 -0.363792   0.032436 -11.216  < 2e-16 ***
+    ## poly(Acceleration, 2, raw = T)2  0.020299   0.002135   9.509  < 2e-16 ***
+    ## log(Efficiency)                  0.725070   0.149597   4.847 3.65e-06 ***
+    ## log(FastChargeSpeed)             0.142532   0.060999   2.337    0.021 *  
+    ## NumberofSeats                   -0.110017   0.024470  -4.496 1.56e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.1781 on 125 degrees of freedom
+    ##   (48 observations deleted due to missingness)
+    ## Multiple R-squared:  0.8563, Adjusted R-squared:  0.8494 
+    ## F-statistic: 124.1 on 6 and 125 DF,  p-value: < 2.2e-16
+
+``` r
+lm5 %>%
+  plot(which = 1:2)
+```
+
+![](draft_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->![](draft_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->

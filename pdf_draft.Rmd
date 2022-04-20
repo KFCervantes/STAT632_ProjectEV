@@ -1,0 +1,24 @@
+---
+title: "pdf_draft"
+author: "Kaleb Cervantes"
+date: "4/20/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The purpose of this was to test if the model will work in a pdf document as opposed to a github document.
+
+\begin{align*}
+\frac{1}{\sqrt{\texttt{PriceinUK}}} = & \beta_0\\
++& \beta_1 \texttt{Subtitle} \\
++& \beta_2 \texttt{Subtitle}^2 \\
++& \beta_3 \texttt{TopSpeed}^2 \\
++& \beta_4 \ln \texttt{Efficiency} \\
++& \beta_5 \ln \texttt{NumberofSeats} \\
++& \epsilon
+\end{align*}
+
+Fortunately, this seems to have worked.

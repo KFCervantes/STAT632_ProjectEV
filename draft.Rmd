@@ -217,3 +217,38 @@ lm4 %>%
 ```
 
 This seems to indicate that an inverse cube root transformation may help.
+
+# Old Model
+For this, I decided to use and absolute correlation of 0.8 as the cutoff.
+
+```{r}
+data %>%
+  select_if(is.numeric) %>%
+  cor(use = "pairwise.complete.obs")
+```
+
+In order to select the variables, I went in order of left to right. Since `Subtitle` is highly correllated with `Range`, I dropped `Range`.
+
+Since `TopSpeed` is highly correlated with `Accelaration`, I also dropped that from the model.
+
+```{r}
+lm_data3 <- data[, c("Name", "Subtitle", "Acceleration", "Efficiency", "FastChargeSpeed", "Drive", "NumberofSeats", "PriceinUK")]
+```
+
+
+
+```{r}
+lm5 <- (
+  log(PriceinUK) ~
+    log(Subtitle) +
+    poly(Acceleration, 2, raw = T) +
+    log(Efficiency) +
+    log(FastChargeSpeed) +
+    NumberofSeats
+) %>%
+  lm(lm_data3)
+lm5 %>%
+  summary
+lm5 %>%
+  plot(which = 1:2)
+```
