@@ -231,8 +231,15 @@ In order to select the variables, I went in order of left to right. Since `Subti
 
 Since `TopSpeed` is highly correlated with `Accelaration`, I also dropped that from the model.
 
+Now that these were dropped, I decided to visualize a scatterplot matrix.
+
 ```{r}
-lm_data3 <- data[, c("Name", "Subtitle", "Acceleration", "Efficiency", "FastChargeSpeed", "Drive", "NumberofSeats", "PriceinUK")]
+(PriceinUK ~ .) %>%
+  pairs(
+    data %>%
+      select_if(is.numeric) %>%
+      select(-"PriceinGermany")
+  )
 ```
 
 
