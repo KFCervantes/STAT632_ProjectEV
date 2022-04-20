@@ -1,6 +1,6 @@
 Draft
 ================
-2022-04-16
+2022-04-19
 
 ``` r
 library(car)
@@ -322,12 +322,118 @@ This process has resulted in the following model:
 
 $$
 \\begin{align\*}
-\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta\_0\\\\
-+& \\beta\_1 \\texttt{Subtitle} \\\\
-+& \\beta\_2 \\texttt{Subtitle}^2 \\\\
-+& \\beta\_3 \\texttt{TopSpeed}^2 \\\\
-+& \\beta\_4 \\ln \\texttt{Efficiency} \\\\
-+& \\beta\_5 \\ln \\texttt{NumberofSeats} \\\\
+\\frac{1}{\\sqrt{\\texttt{PriceinUK}}} = & \\beta_0\\\\
++& \\beta_1 \\texttt{Subtitle} \\\\
++& \\beta_2 \\texttt{Subtitle}^2 \\\\
++& \\beta_3 \\texttt{TopSpeed}^2 \\\\
++& \\beta_4 \\ln \\texttt{Efficiency} \\\\
++& \\beta_5 \\ln \\texttt{NumberofSeats} \\\\
 +& \\epsilon
 \\end{align\*}
 $$
+
+# Alternative Model
+
+It is important to note that there is an alternative response in the
+dataset: `PriceinGermany`. The same process will be repeated as with
+`PriceinUK`.
+
+## Scatterplot Matrix
+
+``` r
+(PriceinGermany ~ .) %>%
+  pairs(
+    data %>%
+      select_if(is.numeric) %>%
+      select(-c("PriceinUK", "Range", "Acceleration", "FastChargeSpeed"))
+  )
+```
+
+![](draft_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+Apart from `NumberofSeats`, there seems to be a positive linear
+relationship with the response and `Subtitle` and `TopSpeed`.
+`PriceinGermany` and `Efficiency` seems to have a positive relationship,
+but not a constant variance.
+
+## Alternative Reduced Model
+
+In order to get the desired subset, we will drop the null values from
+the desired columns.
+
+``` r
+lm_data2 <- data %>%
+  select(-c("Acceleration", "Range", "FastChargeSpeed", "PriceinUK")) %>%
+  drop_na()
+```
+
+Now the full alternative model will be fit.
+
+``` r
+lm4 <- (PriceinGermany ~ Subtitle + TopSpeed + Efficiency + NumberofSeats + Drive) %>%
+  lm(lm_data2) %>%
+  step(
+    trace = 0,
+    k = lm_data2 %>% nrow %>% log
+  )
+
+lm4 %>%
+  summary
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = PriceinGermany ~ TopSpeed + Efficiency, data = lm_data2)
+    ## 
+    ## Residuals:
+    ##    Min     1Q Median     3Q    Max 
+    ## -42290  -7658  -1972   5802 132089 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) -101515.26   11255.42  -9.019 4.65e-16 ***
+    ## TopSpeed        590.17      35.25  16.741  < 2e-16 ***
+    ## Efficiency      287.50      45.63   6.301 2.58e-09 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 19440 on 165 degrees of freedom
+    ## Multiple R-squared:  0.6514, Adjusted R-squared:  0.6472 
+    ## F-statistic: 154.2 on 2 and 165 DF,  p-value: < 2.2e-16
+
+``` r
+lm4 %>%
+  plot(which = 1:2)
+```
+
+![](draft_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->![](draft_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+
+Since the Residuals vs Fitted Values plot seems to fan out, there also
+does not seem to be a constant variance. This indicates that not all of
+the assumptions are met.
+
+## Possible Transformations
+
+We now use box-cox to find a transformation of the response.
+
+``` r
+lm4 %>%
+  powerTransform %>%
+  summary
+```
+
+    ## bcPower Transformation to Normality 
+    ##    Est Power Rounded Pwr Wald Lwr Bnd Wald Upr Bnd
+    ## Y1   -0.2331       -0.33      -0.4386      -0.0275
+    ## 
+    ## Likelihood ratio test that transformation parameter is equal to 0
+    ##  (log transformation)
+    ##                            LRT df     pval
+    ## LR test, lambda = (0) 5.008578  1 0.025222
+    ## 
+    ## Likelihood ratio test that no transformation is needed
+    ##                            LRT df       pval
+    ## LR test, lambda = (1) 134.5368  1 < 2.22e-16
+
+This seems to indicate that an inverse cube root transformation may
+help.

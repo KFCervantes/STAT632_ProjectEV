@@ -163,3 +163,57 @@ $$
 +& \epsilon
 \end{align*}
 $$
+
+# Alternative Model
+It is important to note that there is an alternative response in the dataset: `PriceinGermany`. The same process will be repeated as with `PriceinUK`.
+
+## Scatterplot Matrix
+```{r}
+(PriceinGermany ~ .) %>%
+  pairs(
+    data %>%
+      select_if(is.numeric) %>%
+      select(-c("PriceinUK", "Range", "Acceleration", "FastChargeSpeed"))
+  )
+```
+
+Apart from `NumberofSeats`, there seems to be a positive linear relationship with the response and `Subtitle` and `TopSpeed`. `PriceinGermany` and `Efficiency` seems to have a positive relationship, but not a constant variance.
+
+## Alternative Reduced Model
+In order to get the desired subset, we will drop the null values from the desired columns.
+
+```{r}
+lm_data2 <- data %>%
+  select(-c("Acceleration", "Range", "FastChargeSpeed", "PriceinUK")) %>%
+  drop_na()
+```
+
+Now the full alternative model will be fit.
+
+```{r}
+lm4 <- (PriceinGermany ~ Subtitle + TopSpeed + Efficiency + NumberofSeats + Drive) %>%
+  lm(lm_data2) %>%
+  step(
+    trace = 0,
+    k = lm_data2 %>% nrow %>% log
+  )
+
+lm4 %>%
+  summary
+
+lm4 %>%
+  plot(which = 1:2)
+```
+
+Since the Residuals vs Fitted Values plot seems to fan out, there also does not seem to be a constant variance. This indicates that not all of the assumptions are met.
+
+## Possible Transformations
+We now use box-cox to find a transformation of the response.
+
+```{r}
+lm4 %>%
+  powerTransform %>%
+  summary
+```
+
+This seems to indicate that an inverse cube root transformation may help.
