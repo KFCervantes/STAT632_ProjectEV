@@ -86,8 +86,14 @@ ggplot(
     title = "Residuals vs Fitted Values"
   )
 
-full_model %>%
-  plot(which = 2)
+ggplot(mapping = aes(sample = full_std_residuals)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(
+    x = "Theorhetical Quantiles",
+    y = "Standardized Residuals",
+    title = "Normal Q-Q"
+  )
 ```
 
 ## Reduced Model
@@ -122,8 +128,14 @@ ggplot(
     title = "Residuals vs Fitted Values"
   )
 
-reduced_model %>%
-  plot(which = 2)
+ggplot(mapping = aes(sample = reduced_std_residuals)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(
+    x = "Theorhetical Quantiles",
+    y = "Standardized Residuals",
+    title = "Normal Q-Q"
+  )
 ```
 
 This process removed `log(FastChargeSpeed)` and `Drive` from the model. The assumptions still appear to be met. In order to ensure no significant predictors were removed, a partial $F$-Test will be conducted between the two models.
