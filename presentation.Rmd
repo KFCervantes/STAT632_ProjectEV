@@ -41,9 +41,7 @@ final_model <- (
 ## Process
 <!-- I need to fill out this when I finish this part of the paper. -->
 
-## Results
-We ended up with the final model:
-
+## Final Model
 $$
 \begin{align*}
 \ln \texttt{PriceinUK} &= \beta_0 \\
@@ -59,7 +57,7 @@ $$
 \end{align*}
 $$
 
-## Results 2
+## Results
 We can also extract the coefficients from the final model. All coefficients are significant for $\alpha = 0.05$.
 
 ```{r, echo=FALSE}
@@ -71,7 +69,7 @@ coefficient_tab[1:4, ] %>%
   kable
 ```
 
-## Results 3
+## Results 2
 
 ```{r, echo=FALSE}
 coefficient_tab <- final_model %>%
@@ -98,7 +96,7 @@ ggplot(
   labs(
     x = "Fitted Values",
     y = "Residuals",
-    color = "High Standardized Residual (> 2)"
+    color = "High Standardized\nResidual\n(absolute value > 2)"
   )
 ```
 

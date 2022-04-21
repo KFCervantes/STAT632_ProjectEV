@@ -9,31 +9,94 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Final Model
+# Model Selection
+## Variable Selection
+The first thing was to check the correlations between some of the variables and visualize the data.
 
-```{r}
+```{r, echo=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
 library(magrittr)
 library(tidyr)
 data <- read.csv("Dataset/cleaned_data.csv") %>%
   drop_na
-final_model <- (
-    log(PriceinUK) ~
-      log(Subtitle) +
-      poly(Acceleration, 2, raw = T) + 
-      poly(TopSpeed, 2, raw = T) +
-      log(Efficiency) +
-      factor(NumberofSeats)
+
+numeric_data <- data %>%
+  select_if(is.numeric) %>%
+  select(-"PriceinGermany")
+
+numeric_data %>% cor
+
+pairs(
+  PriceinUK ~ .,
+  numeric_data
+)
+```
+
+The most highly correlated variables are `Subtitle` and `Range`. These have a correlation of 0.91104205 and seem to have similar plots in the scatter plot matrix. A zoomed in scatter plot is included below.
+
+```{r, echo=FALSE}
+ggplot(data, aes(Subtitle, Range)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+```
+
+When zoomed in, the two variables seem to have a linear relationship with each other. This indicates that one of these may be dropped. `Subtitle` and `Range` have respective correlations 0.7039080 and 0.6843999 with the response. Since `Subtitle` has a stronger correlation with the response, that will be the predictor that is kept.
+
+## Transformations
+In the first row of the scatter plot matrix, `TopSpeed` and `Acceleration` appear to form a parabola when next to each other. As such, a quadratic transformation will be applied to those two variables.
+
+`NumberofSeats` also appears to behave as a factor in the scatter plot matrix. As such, it will be transformed into one.
+
+In order to handle non-constant variance, logarithmic transformations will be applied to the other predictors and response variables.
+
+## Full Model
+```{r, echo = FALSE}
+full_model <- (
+  log(PriceinUK) ~
+    log(Subtitle) +
+    poly(Acceleration, 2, raw = T) +
+    poly(TopSpeed, 2, raw = T) +
+    log(Efficiency) +
+    log(FastChargeSpeed) +
+    Drive +
+    factor(NumberofSeats)
 ) %>%
   lm(data)
 
-final_model %>%
+full_model %>%
   summary
 
-final_model %>%
+full_model %>%
   plot(which = 1:2)
 ```
 
-This has equation
+## Reduced Model
+This full model seems to have met the assumptions for linear regression. However, it still contains predictors that are not significant. In order to reduce the model, a step-wise process will be used with BIC as the metric.
+
+```{r, echo=FALSE}
+reduced_model <- full_model %>%
+  step(
+    trace = 0,
+    k = data %>% nrow %>% log
+  )
+
+reduced_model %>%
+  summary
+
+reduced_model %>%
+  plot(which = 1:2)
+```
+
+This process removed `log(FastChargeSpeed)` and `Drive` from the model. The assumptions still appear to be met. In order to ensure no significant predictors were removed, a partial $F$-Test will be conducted between the two models.
+
+```{r, echo=FALSE}
+anova(reduced_model, full_model)
+```
+
+Since the $p$-value is high, we lack statistically significant evidence that any significant predictors were dropped.
+
+This leaves us with the formula:
 
 \begin{align*}
 \ln \texttt{PriceinUK} &= \beta_0 \\
