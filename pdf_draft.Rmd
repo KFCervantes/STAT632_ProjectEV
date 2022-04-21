@@ -15,6 +15,7 @@ The first thing was to check the correlations between some of the variables and 
 
 ```{r, echo=FALSE, message=FALSE}
 library(dplyr)
+library(knitr)
 library(ggplot2)
 library(magrittr)
 library(tidyr)
@@ -157,3 +158,27 @@ This leaves us with the formula:
 &+ \beta_7 \left( \texttt{NumberofSeats} == 5 \right) + \beta_8 \left( \texttt{NumberofSeats} == 7 \right) \\
 &+ \epsilon
 \end{align*}
+
+Using this, we can determine some of the high leverage points:
+
+```{r, echo=FALSE}
+reduced_leverage <- reduced_model %>% hatvalues
+data %>%
+  subset(
+    abs(reduced_leverage) > 2 * mean(reduced_leverage),
+    c("Name", "PriceinUK")
+  ) %>%
+  kable
+```
+
+and the high residual points
+
+```{r, echo=FALSE}
+reduced_leverage <- reduced_model %>% hatvalues
+data %>%
+  subset(
+    abs(reduced_std_residuals) > 2,
+    c("Name", "PriceinUK")
+  ) %>%
+  kable
+```
