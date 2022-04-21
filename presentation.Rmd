@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+library(ggplot2)
 library(knitr)
 library(magrittr)
 library(tidyr)
@@ -37,7 +38,10 @@ final_model <- (
 
 ## Data Description
 
-## Methods and Results
+## Process
+<!-- I need to fill out this when I finish this part of the paper. -->
+
+## Results
 We ended up with the final model:
 
 $$
@@ -55,25 +59,58 @@ $$
 \end{align*}
 $$
 
-## Data Description 2
+## Results 2
+We can also extract the coefficients from the final model. All coefficients are significant for $\alpha = 0.05$.
 
 ```{r, echo=FALSE}
-final_model %>%
+coefficient_tab <- final_model %>%
   summary %$%
-  coefficients %>%
+  coefficients
+
+coefficient_tab[1:4, ] %>%
   kable
 ```
 
-## Data Description 3
+## Results 3
+
 ```{r, echo=FALSE}
-final_model %>%
-  plot(which = 1)
+coefficient_tab <- final_model %>%
+  summary %$%
+  coefficients
+
+coefficient_tab[5:9, ] %>%
+  kable
 ```
 
-## Data Description 3
+## Residuals vs Fitted Values Plot
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+std_residuals <- final_model %>%
+  rstandard
+
+ggplot(
+  mapping = aes(
+    x = final_model$fitted.values,
+    y = final_model$residuals,
+  )
+) +
+  geom_point(aes(color = std_residuals %>% abs > 2)) +
+  geom_smooth(se = F) +
+  labs(
+    x = "Fitted Values",
+    y = "Residuals",
+    color = "High Standardized Residual (> 2)"
+  )
+```
+
+## Q-Q Plot
 ```{r, echo=FALSE}
-final_model %>%
-  plot(which = 2)
+ggplot(mapping = aes(sample = std_residuals)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(
+    x = "Theorhetical Quantiles",
+    y = "Standardized Residuals"
+  )
 ```
 
 ## Conclusion
