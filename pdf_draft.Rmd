@@ -109,7 +109,31 @@ reduced_model <- full_model %>%
 
 reduced_model %>%
   summary
+```
 
+This process removed `log(FastChargeSpeed)` and `Drive` from the model. The assumptions still appear to be met. In order to ensure no significant predictors were removed, a partial $F$-Test will be conducted between the two models.
+
+```{r, echo=FALSE}
+anova(reduced_model, full_model)
+```
+
+Since the $p$-value is high, we lack statistically significant evidence that any significant predictors were dropped.
+
+This leaves us with the formula:
+
+\begin{align*}
+\ln \texttt{PriceinUK} &= \beta_0 \\
+&+ \beta_1 \ln \texttt{Subtitle} \\
+&+ \beta_2 \texttt{Acceleration} + \beta_3 \texttt{Acceleration}^2 \\
+&+ \beta_4 \texttt{TopSpeed} + \beta_5 \texttt{TopSpeed}^2 \\
+&+ \beta_6 \ln \texttt{Efficiency} \\
+&+ \beta_7 \left( \texttt{NumberofSeats} == 5 \right) + \beta_8 \left( \texttt{NumberofSeats} == 7 \right) \\
+&+ \epsilon
+\end{align*}
+
+It may also help to check some diagnostic plots.
+
+```{r, echo=FALSE}
 reduced_std_residuals <- reduced_model %>%
   rstandard
 
@@ -139,27 +163,23 @@ ggplot(mapping = aes(sample = reduced_std_residuals)) +
   )
 ```
 
-This process removed `log(FastChargeSpeed)` and `Drive` from the model. The assumptions still appear to be met. In order to ensure no significant predictors were removed, a partial $F$-Test will be conducted between the two models.
+From the visual tests, the normality and constant variance conditions appear to be met. However it may help to perform some tests.
+
+First, a Shapiro-Wilkes test will be used to test for normality.
 
 ```{r, echo=FALSE}
-anova(reduced_model, full_model)
+reduced_std_residuals %>% shapiro.test
 ```
 
-Since the $p$-value is high, we lack statistically significant evidence that any significant predictors were dropped.
+Here, the $p$-value is significant to reject normality. However, the $W$-statistic is larger than 0.95, which indicates that the standardized residuals are highly correlated with the theoretical quantiles. As such, there is not enough evidence to refute normality. Since normality is not rejected, we now test for constant variance.
 
-This leaves us with the formula:
+```{r, echo=FALSE}
+reduced_model %>% (lmtest::bptest)
+```
 
-\begin{align*}
-\ln \texttt{PriceinUK} &= \beta_0 \\
-&+ \beta_1 \ln \texttt{Subtitle} \\
-&+ \beta_2 \texttt{Acceleration} + \beta_3 \texttt{Acceleration}^2 \\
-&+ \beta_4 \texttt{TopSpeed} + \beta_5 \texttt{TopSpeed}^2 \\
-&+ \beta_6 \ln \texttt{Efficiency} \\
-&+ \beta_7 \left( \texttt{NumberofSeats} == 5 \right) + \beta_8 \left( \texttt{NumberofSeats} == 7 \right) \\
-&+ \epsilon
-\end{align*}
+Since the $p$-value is low, we reject constant variance.
 
-Using this, we can determine some of the high leverage points:
+Using the data, we can determine some of the high leverage points:
 
 ```{r, echo=FALSE}
 reduced_leverage <- reduced_model %>% hatvalues
