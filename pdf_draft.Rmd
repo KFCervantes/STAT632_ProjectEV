@@ -61,7 +61,7 @@ full_model <- (
     log(Efficiency) +
     log(FastChargeSpeed) +
     Drive +
-    factor(NumberofSeats)
+    NumberofSeats
 ) %>%
   lm(data)
 

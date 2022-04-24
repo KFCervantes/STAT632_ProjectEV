@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+library(dplyr)
 library(ggplot2)
 library(knitr)
 library(magrittr)
@@ -24,7 +25,7 @@ final_model <- (
       poly(Acceleration, 2, raw = T) + 
       poly(TopSpeed, 2, raw = T) +
       log(Efficiency) +
-      factor(NumberofSeats)
+      NumberofSeats
 ) %>%
   lm(data)
 ```
@@ -77,7 +78,7 @@ coefficient_tab <- final_model %>%
   summary %$%
   coefficients
 
-coefficient_tab[5:9, ] %>%
+coefficient_tab[5:8, ] %>%
   kable
 ```
 
@@ -116,6 +117,38 @@ ggplot(mapping = aes(sample = std_residuals)) +
 found_ind <- c(5, 7, 9, 12, 18, 22, 28, 29, 35, 36, 42, 44)
 found_prices <- c(22585, 35050, 28950, 34995, 48335, 49105, 72175, 73785, 51510, 53010, 54990, 48280)
 full_data[found_ind, "PriceinUK"] <- found_prices
-test_data <- full_data[found_ind, ]
+test_data <- anti_join(full_data, data, by = "Name") %>%
+  select(
+    Name,
+    PriceinUK,
+    Subtitle,
+    Acceleration,
+    TopSpeed,
+    Efficiency,
+    NumberofSeats
+  ) %>%
+  drop_na
+
+log_test <- test_data$PriceinUK %>% log
+pred_log_test <- final_model %>% predict(test_data)
+
+log_train <- data$PriceinUK %>% log
+pred_log_train <- final_model$fitted.values
+
+ggplot(
+  mapping = aes(log_test, pred_log_test)
+) +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_point() +
+  labs(
+    x = "log(PriceinUK)",
+    y = "Predicted log(PriceinUK)"
+  )
+
+
+c(
+  (log_test - pred_log_test)^2 %>% mean,
+  (test_data$PriceinUK - exp(pred_log_test))^2 %>% mean
+)
 ```
 ## Conclusion
