@@ -53,32 +53,18 @@ $$
 &+ \beta_4 \texttt{TopSpeed} \\
 &+ \beta_5 \texttt{TopSpeed}^2 \\
 &+ \beta_6 \ln \texttt{Efficiency} \\
-&+ \beta_7 \left( \texttt{NumberofSeats} == 5 \right) \\
-&+ \beta_8 \left( \texttt{NumberofSeats} == 7 \right) \\
+&+ \beta_7 \texttt{NumberofSeats} \\
 &+ \epsilon
 \end{align*}
 $$
 
 ## Results
-We can also extract the coefficients from the final model. All coefficients are significant for $\alpha = 0.05$.
-
 ```{r, echo=FALSE}
 coefficient_tab <- final_model %>%
   summary %$%
   coefficients
 
-coefficient_tab[1:4, ] %>%
-  kable
-```
-
-## Results 2
-
-```{r, echo=FALSE}
-coefficient_tab <- final_model %>%
-  summary %$%
-  coefficients
-
-coefficient_tab[5:8, ] %>%
+coefficient_tab %>%
   kable
 ```
 
@@ -112,8 +98,9 @@ ggplot(mapping = aes(sample = std_residuals)) +
     y = "Standardized Residuals"
   )
 ```
+
 ## Testing
-```{r}
+```{r, echo=FALSE}
 found_ind <- c(5, 7, 9, 12, 18, 22, 28, 29, 35, 36, 42, 44)
 found_prices <- c(22585, 35050, 28950, 34995, 48335, 49105, 72175, 73785, 51510, 53010, 54990, 48280)
 full_data[found_ind, "PriceinUK"] <- found_prices
@@ -129,11 +116,10 @@ test_data <- anti_join(full_data, data, by = "Name") %>%
   ) %>%
   drop_na
 
-log_test <- test_data$PriceinUK %>% log
+test <- test_data$PriceinUK
+log_test <- test %>% log
 pred_log_test <- final_model %>% predict(test_data)
-
-log_train <- data$PriceinUK %>% log
-pred_log_train <- final_model$fitted.values
+pred_test <- pred_log_test %>% exp
 
 ggplot(
   mapping = aes(log_test, pred_log_test)
@@ -144,11 +130,29 @@ ggplot(
     x = "log(PriceinUK)",
     y = "Predicted log(PriceinUK)"
   )
+```
 
-
-c(
-  (log_test - pred_log_test)^2 %>% mean,
-  (test_data$PriceinUK - exp(pred_log_test))^2 %>% mean
-)
+## Prediction Error
+```{r, echo=FALSE, message=FALSE}
+library(caret)
+data.frame(
+  prediction = c(
+    "`log(PriceinUK)`",
+    "`PriceinUK`"
+  ),
+  R2 = c(
+    R2(pred_log_test, log_test),
+    R2(pred_test, test)
+  ),
+  MAE = c(
+    MAE(pred_log_test, log_test),
+    MAE(pred_test, test)
+  ),
+  RMSE = c(
+    RMSE(pred_log_test, log_test),
+    RMSE(pred_test, test)
+  )
+) %>%
+  kable
 ```
 ## Conclusion
