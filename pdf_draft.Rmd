@@ -194,7 +194,6 @@ data %>%
 and the high residual points
 
 ```{r, echo=FALSE}
-reduced_leverage <- reduced_model %>% hatvalues
 data %>%
   subset(
     abs(reduced_std_residuals) > 2,
@@ -202,3 +201,5 @@ data %>%
   ) %>%
   kable
 ```
+
+In both of these sets, a significant fraction of the cars are Teslas. For the high residual points, a decent amount were also Mercedes.
