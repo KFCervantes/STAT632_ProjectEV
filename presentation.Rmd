@@ -42,6 +42,15 @@ final_model <- (
 
 ## Process
 <!-- I need to fill out this when I finish this part of the paper. -->
+(1) Clean data.
+
+(2) Check correlations and relations between variables.
+
+(3) Apply appropriate transformations.
+
+(3) Check full model.
+
+(4) Use step-wise selection with BIC to find reduced model.
 
 ## Final Model
 $$
@@ -97,6 +106,12 @@ ggplot(mapping = aes(sample = std_residuals)) +
     x = "Theorhetical Quantiles",
     y = "Standardized Residuals"
   )
+```
+
+## Assumptions Tests
+```{r, echo=FALSE}
+std_residuals %>% shapiro.test
+final_model %>% (lmtest::bptest)
 ```
 
 ## Testing
