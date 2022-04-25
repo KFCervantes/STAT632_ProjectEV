@@ -54,11 +54,11 @@ In order to handle non-constant variance, logarithmic transformations will be ap
 ## Full Model
 ```{r, echo = FALSE, warning=FALSE}
 full_model <- (
-  log(PriceinUK) ~
-    log(Subtitle) +
+  1 / sqrt(PriceinUK) ~
+    log(Range) +
     poly(Acceleration, 2, raw = T) +
     poly(TopSpeed, 2, raw = T) +
-    log(Efficiency) +
+    poly(Efficiency, 2, raw = T) +
     log(FastChargeSpeed) +
     Drive +
     NumberofSeats

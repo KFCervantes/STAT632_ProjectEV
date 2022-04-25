@@ -21,10 +21,10 @@ data <- full_data %>%
   drop_na
 final_model <- (
     log(PriceinUK) ~
-      log(Subtitle) +
+      log(Range) +
       poly(Acceleration, 2, raw = T) + 
       poly(TopSpeed, 2, raw = T) +
-      log(Efficiency) +
+      poly(Efficiency, 2, raw = T) +
       NumberofSeats
 ) %>%
   lm(data)
@@ -55,14 +55,12 @@ final_model <- (
 ## Final Model
 $$
 \begin{align*}
-\ln \texttt{PriceinUK} &= \beta_0 \\
-&+ \beta_1 \ln \texttt{Subtitle} \\
-&+ \beta_2 \texttt{Acceleration} \\
-&+ \beta_3 \texttt{Acceleration}^2 \\
-&+ \beta_4 \texttt{TopSpeed} \\
-&+ \beta_5 \texttt{TopSpeed}^2 \\
-&+ \beta_6 \ln \texttt{Efficiency} \\
-&+ \beta_7 \texttt{NumberofSeats} \\
+\frac{1}{\sqrt{\texttt{PriceinUK}}} &= \beta_0 \\
+&+ \beta_1 \ln \texttt{Range} \\
+&+ \beta_2 \texttt{Acceleration} + \beta_3 \texttt{Acceleration}^2 \\
+&+ \beta_4 \texttt{TopSpeed} + \beta_5 \texttt{TopSpeed}^2 \\
+&+ \beta_6 \texttt{Efficiency} + \beta_7\texttt{Efficiency}^2\\
+&+ \beta_8 \texttt{NumberofSeats} \\
 &+ \epsilon
 \end{align*}
 $$
@@ -73,7 +71,17 @@ coefficient_tab <- final_model %>%
   summary %$%
   coefficients
 
-coefficient_tab %>%
+coefficient_tab[1:5, ] %>%
+  kable
+```
+
+## Results
+```{r, echo=FALSE}
+coefficient_tab <- final_model %>%
+  summary %$%
+  coefficients
+
+coefficient_tab[6:9, ] %>%
   kable
 ```
 
@@ -123,7 +131,7 @@ test_data <- anti_join(full_data, data, by = "Name") %>%
   select(
     Name,
     PriceinUK,
-    Subtitle,
+    Range,
     Acceleration,
     TopSpeed,
     Efficiency,
@@ -132,18 +140,18 @@ test_data <- anti_join(full_data, data, by = "Name") %>%
   drop_na
 
 test <- test_data$PriceinUK
-log_test <- test %>% log
-pred_log_test <- final_model %>% predict(test_data)
-pred_test <- pred_log_test %>% exp
+inv_sq_test <- test^(-2)
+pred_inv_sq_test <- final_model %>% predict(test_data)
+pred_test <- pred_inv_sq_test^(-2)
 
 ggplot(
-  mapping = aes(log_test, pred_log_test)
+  mapping = aes(inv_sq_test, pred_inv_sq_test)
 ) +
   geom_abline(slope = 1, intercept = 0) +
   geom_point() +
   labs(
-    x = "log(PriceinUK)",
-    y = "Predicted log(PriceinUK)"
+    x = "PriceinUK^(-0.5)",
+    y = "Predicted PriceinUK^(-0.5)"
   )
 ```
 
@@ -152,19 +160,19 @@ ggplot(
 library(caret)
 data.frame(
   prediction = c(
-    "`log(PriceinUK)`",
+    "`1 / sqrt(PriceinUK)`",
     "`PriceinUK`"
   ),
   R2 = c(
-    R2(pred_log_test, log_test),
+    R2(pred_inv_sq_test, inv_sq_test),
     R2(pred_test, test)
   ),
   MAE = c(
-    MAE(pred_log_test, log_test),
+    MAE(pred_inv_sq_test, inv_sq_test),
     MAE(pred_test, test)
   ),
   RMSE = c(
-    RMSE(pred_log_test, log_test),
+    RMSE(pred_inv_sq_test, inv_sq_test),
     RMSE(pred_test, test)
   )
 ) %>%
