@@ -40,6 +40,10 @@ final_model <- (
 
 ## Data Description
 
+## Word Cloud
+
+## Correlation Matrix
+
 ## Process
 <!-- I need to fill out this when I finish this part of the paper. -->
 (1) Clean data.
@@ -124,9 +128,12 @@ final_model %>% (lmtest::bptest)
 
 ## Testing
 ```{r, echo=FALSE}
+
+# This is where I filled in some of the NAs
 found_ind <- c(5, 7, 9, 12, 18, 22, 28, 29, 35, 36, 42, 44)
 found_prices <- c(22585, 35050, 28950, 34995, 48335, 49105, 72175, 73785, 51510, 53010, 54990, 48280)
 full_data[found_ind, "PriceinUK"] <- found_prices
+
 test_data <- anti_join(full_data, data, by = "Name") %>%
   select(
     Name,
