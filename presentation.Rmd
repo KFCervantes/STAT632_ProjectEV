@@ -20,9 +20,9 @@ full_data <-  read.csv("Dataset/cleaned_data.csv")
 data <- full_data %>%
   drop_na
 final_model <- (
-    log(PriceinUK) ~
+    1 / sqrt(PriceinUK) ~
       log(Range) +
-      poly(Acceleration, 2, raw = T) + 
+      #poly(Acceleration, 2, raw = T) + 
       poly(TopSpeed, 2, raw = T) +
       poly(Efficiency, 2, raw = T) +
       NumberofSeats
@@ -41,20 +41,54 @@ final_model <- (
 ## Data Description
 
 ## Word Cloud
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+full_data %<>%
+  separate(
+    Name,
+    "Manufacturer",
+    extra = "drop",
+    remove = F
+  )
+
+frequency <- full_data %>% 
+  group_by(Manufacturer) %>% 
+  count(Manufacturer,sort=T) %>% 
+  ungroup()
+
+library(wordcloud)
+wordcloud(words = frequency$Manufacturer, freq = frequency$n,min.freq=1,max.words=100, random.order=FALSE, rot.per=0.35,colors=brewer.pal(10, "Dark2"))
+```
+
+## Bar Chart
+```{r, echo = FALSE, message = FALSE}
+data %>% 
+  top_n(20) %>%
+  ggplot(aes(x=TopSpeed,
+             y=reorder(Name,TopSpeed),
+             fill=TopSpeed)) + 
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label=TopSpeed),
+            position = position_dodge(width = 0.9),
+            hjust= 1, color = "white") +
+  labs(x = "", y = "")
+```
 
 ## Correlation Matrix
+```{r}
+library(heatmaply)
+
+palette = colorRampPalette(c("green", "white", "red")) (20)
+cor_data <- full_data %>%
+  select_if(is.numeric) %>%
+  cor(use = "pairwise")
+corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="black")
+```
 
 ## Process
-<!-- I need to fill out this when I finish this part of the paper. -->
-(1) Clean data.
-
-(2) Check correlations and relations between variables.
-
-(3) Apply appropriate transformations.
-
-(3) Check full model.
-
-(4) Use step-wise selection with BIC to find reduced model.
+<!-- Add model comparison stuff with: -->
+<!-- full and reduced model -->
+<!-- transformed and not transformed predictors -->
+<!-- transformed and not transformed response -->
 
 ## Final Model
 $$
@@ -75,17 +109,7 @@ coefficient_tab <- final_model %>%
   summary %$%
   coefficients
 
-coefficient_tab[1:5, ] %>%
-  kable
-```
-
-## Results
-```{r, echo=FALSE}
-coefficient_tab <- final_model %>%
-  summary %$%
-  coefficients
-
-coefficient_tab[6:9, ] %>%
+coefficient_tab %>%
   kable
 ```
 
@@ -94,19 +118,20 @@ coefficient_tab[6:9, ] %>%
 std_residuals <- final_model %>%
   rstandard
 
-ggplot(
-  mapping = aes(
-    x = final_model$fitted.values,
-    y = final_model$residuals,
-  )
-) +
-  geom_point(aes(color = std_residuals %>% abs > 2)) +
-  geom_smooth(se = F) +
-  labs(
-    x = "Fitted Values",
-    y = "Residuals",
-    color = "High Standardized\nResidual\n(absolute value > 2)"
-  )
+plot(final_model, which = 1)
+# ggplot(
+#   mapping = aes(
+#     x = final_model$fitted.values,
+#     y = final_model$residuals,
+#   )
+# ) +
+#   geom_point(aes(color = std_residuals %>% abs > 2)) +
+#   geom_smooth(se = F) +
+#   labs(
+#     x = "Fitted Values",
+#     y = "Residuals",
+#     color = "High Standardized\nResidual\n(absolute value > 2)"
+#   )
 ```
 
 ## Q-Q Plot
@@ -127,6 +152,7 @@ final_model %>% (lmtest::bptest)
 ```
 
 ## Testing
+<!-- Possibly merge with next slide to avoid confusion -->
 ```{r, echo=FALSE}
 
 # This is where I filled in some of the NAs
@@ -139,7 +165,7 @@ test_data <- anti_join(full_data, data, by = "Name") %>%
     Name,
     PriceinUK,
     Range,
-    Acceleration,
+    #Acceleration,
     TopSpeed,
     Efficiency,
     NumberofSeats
