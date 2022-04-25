@@ -24,8 +24,8 @@ final_model <- (
       log(Range) +
       #poly(Acceleration, 2, raw = T) + 
       poly(TopSpeed, 2, raw = T) +
-      poly(Efficiency, 2, raw = T) +
-      NumberofSeats
+      poly(Efficiency, 2, raw = T)# +
+      #NumberofSeats
 ) %>%
   lm(data)
 ```
@@ -160,12 +160,25 @@ found_ind <- c(5, 7, 9, 12, 18, 22, 28, 29, 35, 36, 42, 44)
 found_prices <- c(22585, 35050, 28950, 34995, 48335, 49105, 72175, 73785, 51510, 53010, 54990, 48280)
 full_data[found_ind, "PriceinUK"] <- found_prices
 
-test_data <- anti_join(full_data, data, by = "Name") %>%
+# test_data <- anti_join(full_data, data, by = "Name") %>%
+#   select(
+#     Name,
+#     PriceinUK,
+#     Range,
+#     #Acceleration,
+#     TopSpeed,
+#     Efficiency,
+#     NumberofSeats
+#   ) %>%
+#   drop_na
+
+n <- nrow(full_data)
+set.seed(96000)
+test_data <- data[sample(n, 10), ] %>%
   select(
     Name,
     PriceinUK,
     Range,
-    #Acceleration,
     TopSpeed,
     Efficiency,
     NumberofSeats
