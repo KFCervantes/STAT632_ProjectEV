@@ -77,10 +77,17 @@ corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="
 ```
 
 ## Process
-<!-- Add model comparison stuff with: -->
-<!-- full and reduced model -->
-<!-- transformed and not transformed predictors -->
-<!-- transformed and not transformed response -->
+(1) Clean data.
+
+(2) Make full model
+
+(3) Reduce multicolinearity
+
+(4) Transform predictors
+
+(5) Transform response
+
+(6) Stepwise-selection with BIC
 
 ## Full (Untransformed) Model Diagnostics
 ```{r, echo=FALSE}
@@ -100,13 +107,27 @@ full_model$residuals %>% shapiro.test()
 full_model %>% (lmtest::bptest)
 ```
 
-## Full (Semitransformed) Model Diagnostics
+## Reduced Multicolinarity Model Diagnostics
 ```{r, echo=FALSE}
 full_model <- (
   PriceinUK ~
-    log(Subtitle) +
+    Range +
+    TopSpeed +
+    Efficiency +
+    FastChargeSpeed +
+    NumberofSeats 
+) %>%
+  lm(data)
+
+full_model$residuals %>% shapiro.test()
+full_model %>% (lmtest::bptest)
+```
+
+## Predictors Transformed Model Diagnostics
+```{r, echo=FALSE}
+full_model <- (
+  PriceinUK ~
     log(Range) +
-    poly(Acceleration, 2, raw = T) + 
     poly(TopSpeed, 2, raw = T) +
     poly(Efficiency, 2, raw = T) +
     FastChargeSpeed +
@@ -122,15 +143,14 @@ full_model %>% (lmtest::bptest)
 ```{r, echo=FALSE}
 full_model <- (
   1 / sqrt(PriceinUK) ~
-    log(Subtitle) +
     log(Range) +
-    poly(Acceleration, 2, raw = T) + 
     poly(TopSpeed, 2, raw = T) +
     poly(Efficiency, 2, raw = T) +
     FastChargeSpeed +
     NumberofSeats 
 ) %>%
   lm(data)
+
 
 full_model$residuals %>% shapiro.test()
 full_model %>% (lmtest::bptest)
@@ -141,10 +161,10 @@ $$
 \begin{align*}
 \frac{1}{\sqrt{\texttt{PriceinUK}}} &= \beta_0 \\
 &+ \beta_1 \ln \texttt{Range} \\
-&+ \beta_2 \texttt{Acceleration} + \beta_3 \texttt{Acceleration}^2 \\
-&+ \beta_4 \texttt{TopSpeed} + \beta_5 \texttt{TopSpeed}^2 \\
-&+ \beta_6 \texttt{Efficiency} + \beta_7\texttt{Efficiency}^2\\
-&+ \beta_8 \texttt{NumberofSeats} \\
+&+ \beta_2 \texttt{TopSpeed} \\
+&+ \beta_3 \texttt{TopSpeed}^2 \\
+&+ \beta_4 \texttt{Efficiency} \\
+&+ \beta_5 \texttt{Efficiency}^2 \\
 &+ \epsilon
 \end{align*}
 $$
