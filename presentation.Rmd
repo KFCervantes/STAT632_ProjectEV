@@ -60,7 +60,7 @@ wordcloud(words = frequency$Manufacturer, freq = frequency$n,min.freq=1,max.word
 ```
 
 ## Bar Chart
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
 data %>% 
   top_n(20) %>%
   ggplot(aes(x=TopSpeed,
@@ -74,14 +74,15 @@ data %>%
 ```
 
 ## Correlation Matrix
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(heatmaply)
 
 palette = colorRampPalette(c("green", "white", "red")) (20)
 cor_data <- full_data %>%
   select_if(is.numeric) %>%
   cor(use = "pairwise")
-corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="black")
+corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="black",
+                   number.cex = 0.75)
 ```
 
 ## Process
