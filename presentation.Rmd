@@ -29,6 +29,16 @@ data <- full_data %>%
 
     **Which characteristics of Electric Vehicles have a significant impact on their price?**
 
+## Dimensions
+```{r}
+data.frame(
+  c("Full", "Complete"),
+  dim(full_data),
+  dim(data)
+) %>%
+  kable(col.names = c("Dataset", "Rows", "Columns"))
+```
+
 ## Data Description
 
 ## Word Cloud
@@ -74,6 +84,14 @@ cor_data <- full_data %>%
   cor(use = "pairwise")
 corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="black",
                    number.cex = 0.75)
+```
+
+## Scatterplot Matrix
+```{r, echo=FALSE}
+pairs(
+  PriceinUK ~ .,
+  data %>% select_if(is.numeric)
+)
 ```
 
 ## Process
