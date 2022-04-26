@@ -19,15 +19,6 @@ library(tidyr)
 full_data <-  read.csv("Dataset/cleaned_data.csv")
 data <- full_data %>%
   drop_na
-final_model <- (
-    1 / sqrt(PriceinUK) ~
-      log(Range) +
-      #poly(Acceleration, 2, raw = T) + 
-      poly(TopSpeed, 2, raw = T) +
-      poly(Efficiency, 2, raw = T)# +
-      #NumberofSeats
-) %>%
-  lm(data)
 ```
 
 ## Introduction
@@ -91,7 +82,43 @@ corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="
 <!-- transformed and not transformed predictors -->
 <!-- transformed and not transformed response -->
 
-## Full Model Diagnostics
+## Full (Untransformed) Model Diagnostics
+```{r, echo=FALSE}
+full_model <- (
+  PriceinUK ~
+    Subtitle +
+    Range +
+    Acceleration + 
+    TopSpeed +
+    Efficiency +
+    FastChargeSpeed +
+    NumberofSeats 
+) %>%
+  lm(data)
+
+full_model$residuals %>% shapiro.test()
+full_model %>% (lmtest::bptest)
+```
+
+## Full (Semitransformed) Model Diagnostics
+```{r, echo=FALSE}
+full_model <- (
+  PriceinUK ~
+    log(Subtitle) +
+    log(Range) +
+    poly(Acceleration, 2, raw = T) + 
+    poly(TopSpeed, 2, raw = T) +
+    poly(Efficiency, 2, raw = T) +
+    FastChargeSpeed +
+    NumberofSeats 
+) %>%
+  lm(data)
+
+full_model$residuals %>% shapiro.test()
+full_model %>% (lmtest::bptest)
+```
+
+## Full (Transformed) Model Diagnostics
 ```{r, echo=FALSE}
 full_model <- (
   1 / sqrt(PriceinUK) ~
@@ -124,6 +151,16 @@ $$
 
 ## Results
 ```{r, echo=FALSE}
+final_model <- (
+    1 / sqrt(PriceinUK) ~
+      log(Range) +
+      #poly(Acceleration, 2, raw = T) + 
+      poly(TopSpeed, 2, raw = T) +
+      poly(Efficiency, 2, raw = T)# +
+      #NumberofSeats
+) %>%
+  lm(data)
+
 coefficient_tab <- final_model %>%
   summary %$%
   coefficients
