@@ -50,7 +50,7 @@ library(wordcloud)
 wordcloud(words = frequency$Manufacturer, freq = frequency$n,min.freq=1,max.words=100, random.order=FALSE, rot.per=0.35,colors=brewer.pal(10, "Dark2"))
 ```
 
-## Bar Chart
+## Cars by Top Speed in km/h
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 data %>% 
   top_n(20) %>%
