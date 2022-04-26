@@ -91,6 +91,24 @@ corrplot::corrplot(cor_data, method = "number",bg="white",col = palette,tl.col="
 <!-- transformed and not transformed predictors -->
 <!-- transformed and not transformed response -->
 
+## Full Model Diagnostics
+```{r, echo=FALSE}
+full_model <- (
+  1 / sqrt(PriceinUK) ~
+    log(Subtitle) +
+    log(Range) +
+    poly(Acceleration, 2, raw = T) + 
+    poly(TopSpeed, 2, raw = T) +
+    poly(Efficiency, 2, raw = T) +
+    FastChargeSpeed +
+    NumberofSeats 
+) %>%
+  lm(data)
+
+full_model$residuals %>% shapiro.test()
+full_model %>% (lmtest::bptest)
+```
+
 ## Final Model
 $$
 \begin{align*}
