@@ -2,9 +2,7 @@
 title: "Presentation"
 author: "Group"
 date: "4/20/2022"
-output:
-  beamer_presentation: default
-  ioslides_presentation: default
+output: ioslides_presentation
 ---
 
 ```{r setup, include=FALSE}
@@ -105,6 +103,7 @@ $$
 &+ \epsilon
 \end{align*}
 $$
+
 ## Results
 ```{r, echo=FALSE}
 coefficient_tab <- final_model %>%
@@ -151,6 +150,21 @@ ggplot(mapping = aes(sample = std_residuals)) +
 ```{r, echo=FALSE}
 std_residuals %>% shapiro.test
 final_model %>% (lmtest::bptest)
+```
+
+## Outliers
+Here, outlier was defined as points that were both high leverage and high residual.
+
+```{r}
+leverage <- final_model %>% hatvalues
+high_leverage <- abs(leverage) > 2*mean(leverage)
+high_residal <- abs(std_residuals) > 2
+data %>%
+  subset(
+    high_leverage & high_residal,
+    c("Name", "PriceinUK")
+  ) %>%
+  kable
 ```
 
 ## Testing

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex 2022.2.10)  25 APR 2022 18:27
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.1) (preloaded format=pdflatex 2022.2.10)  25 APR 2022 18:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1338,18 +1338,20 @@ Package pdftex.def Info: presentation_files/figure-beamer/unnamed-chunk-7-1.pdf
 
 (presentation.vrb) [12
 
-]
-<presentation_files/figure-beamer/unnamed-chunk-9-1.pdf, id=125, 722.7pt x 505.
-89pt>
-File: presentation_files/figure-beamer/unnamed-chunk-9-1.pdf Graphic file (type
- pdf)
-<use presentation_files/figure-beamer/unnamed-chunk-9-1.pdf>
-Package pdftex.def Info: presentation_files/figure-beamer/unnamed-chunk-9-1.pdf
-  used on input line 235.
-(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
-[13
+] [13
 
- <./presentation_files/figure-beamer/unnamed-chunk-9-1.pdf>]
+]
+<presentation_files/figure-beamer/unnamed-chunk-10-1.pdf, id=132, 722.7pt x 505
+.89pt>
+File: presentation_files/figure-beamer/unnamed-chunk-10-1.pdf Graphic file (typ
+e pdf)
+<use presentation_files/figure-beamer/unnamed-chunk-10-1.pdf>
+Package pdftex.def Info: presentation_files/figure-beamer/unnamed-chunk-10-1.pd
+f  used on input line 253.
+(pdftex.def)             Requested size: 307.2923pt x 215.1046pt.
+[14
+
+ <./presentation_files/figure-beamer/unnamed-chunk-10-1.pdf>]
 \openout4 = `presentation.vrb'.
 
 (presentation.vrb
@@ -1362,9 +1364,9 @@ Overfull \hbox (16.17805pt too wide) in alignment at lines 7--12
  [] [] [] [] 
  []
 
-) [14
+) [15
 
-] [15
+] [16
 
 ]
 \tf@nav=\write5
@@ -1378,10 +1380,10 @@ Overfull \hbox (16.17805pt too wide) in alignment at lines 7--12
 
 (presentation.aux) ) 
 Here is how much of TeX's memory you used:
- 25846 strings out of 478584
- 506861 string characters out of 2844401
- 782554 words of memory out of 3000000
- 43382 multiletter control sequences out of 15000+600000
+ 25852 strings out of 478584
+ 506917 string characters out of 2844401
+ 782601 words of memory out of 3000000
+ 43385 multiletter control sequences out of 15000+600000
  510117 words of font info for 82 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  128i,14n,122p,1011b,393s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1398,9 +1400,9 @@ lmssbx10.pfb><C:/Users/Kaleb/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
 m/lmsy10.pfb><C:/Users/Kaleb/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
 m/lmtt10.pfb><C:/Users/Kaleb/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
 msfonts/symbols/msam10.pfb>
-Output written on presentation.pdf (15 pages, 196702 bytes).
+Output written on presentation.pdf (16 pages, 199264 bytes).
 PDF statistics:
- 202 PDF objects out of 1000 (max. 8388607)
- 45 named destinations out of 1000 (max. 500000)
+ 208 PDF objects out of 1000 (max. 8388607)
+ 48 named destinations out of 1000 (max. 500000)
  24649 words of extra memory for PDF output out of 24883 (max. 10000000)
 
