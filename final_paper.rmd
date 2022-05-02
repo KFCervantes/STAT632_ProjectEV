@@ -40,16 +40,24 @@ Which characteristics of Electric Vehicles have a significant impact on increasi
 <!-- Description of data, coppied from readme -->
 The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA when the numeric parts are parsed out. After the data was cleaned, the following figure was able to be shown.
 
+Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kWh. Since all vehicles were of the same type, only the battery capacity component was needed. This numeric variable was stripped and renamed to `battery_capacity`.
+
 ```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix"}
 
 # Plots figure 1
 select(data, -Name, -PriceinGermany) %>%
   ggpairs(
-    upper = list(
-      
-      # change font size of correlation stuff
-      continuous = wrap("cor", size = 3)
-    )
+    
+    # change font size of correlation stuff
+    upper = list(continuous = wrap("cor", size = 3)),
+    
+    # changes point size
+    lower = list(continuous = wrap("points", size = 0.5)),
+    
+    # removes cluttered axis ticks
+    axisLabels = "none"
+    
+    # I need to figure out how to decrease column font size
   )
 ```
 
@@ -105,6 +113,8 @@ summary(final_model) %>%
   pander::pander(caption = "Final Model Summary")
 ```
 
+From Tabll 2, we can see that although the magnitude of the coefficients are small, they are significant. This makes sense because the model is linear on an inverse square root scale.
+
 <!-- Diagnostic Plots -->
 Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
 
@@ -119,7 +129,11 @@ ggplot(mapping = aes(final_model$fitted.values, final_model$residuals)) +
   geom_point(aes(color = high_res)) +
   geom_smooth(se = F, color = "green", alpha = 0.5) +
   labs(x = "Fitted Values", y = "Residuals", color = "High Residual")
+
+# lmtest::bptest(final_model)
 ```
+
+From figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
 
 ```{r normality, fig.cap="Q-Q Plot"}
 
@@ -128,7 +142,11 @@ ggplot(mapping = aes(sample = final_model$residuals)) +
   geom_qq() +
   geom_qq_line() +
   labs(x = "Theorhetical Quantiles", y = "Measured Quantiles")
+
+# shapiro.test(final_model$residuals)
 ```
+
+The next assumption that was checked was normality of residuals. From figure 3, it appears that normality of the residuals is satsified. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statsistic is also larger than $0.95$, the normality condition seems satisfied.
 
 <!-- description and interpretation -->
 <!-- idk what this means -->
