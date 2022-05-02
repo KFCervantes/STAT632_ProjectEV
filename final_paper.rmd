@@ -6,7 +6,25 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# sets up default settings for code chunks
+knitr::opts_chunk$set(
+  echo = F,
+  message = F,
+  warning = F
+)
+```
+
+```{r loading}
+
+# loads necessary libraries
+library(tidyverse)
+
+# load cleaned dataset and rename subtitle column
+full_data <- read_csv("Dataset/cleaned_data.csv") %>%
+  mutate(battery_capacity = Subtitle, .keep = "unused")
+
+# drop incomplete observations
+data <- drop_na(full_data)
 ```
 
 <!-- Research Question -->
@@ -16,6 +34,13 @@ Which characteristics of Electric Vehicles have a significant impact on increasi
 <!-- Mention data cleaning and why a large portion of the data was removed? -->
 <!-- Description of data? -->
 
+```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix"}
+
+# Plots figure 1
+select(data, -Name) %>%
+  GGally::ggpairs()
+```
+
 In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that had a lot of multicolinearity: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
 <!-- Mention something about VIF with those here -->
 We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
@@ -24,9 +49,23 @@ After this, there were still possible transformations needed for the predictors.
 
 There were also possible transformations needed for the response variable. This was done by using a Box-Cox Power Transformation. In this case, we got $\lambda \approx -0.5$, which corresponds to an inverse square root transformation.
 
-<!-- Explain reduction step here, I might add some r output but im not sure yet -->
+```{r selction}
 
-This resulted in the final model:
+# stepwise selection w/ BIC
+final_model <- lm(
+  1 / sqrt(PriceinUK) ~
+    log(Range) +
+    poly(TopSpeed, 2, raw = T) +
+    poly(Efficiency, 2, raw = T) +
+    FastChargeSpeed +
+    NumberofSeats +
+    Drive,
+  data
+) %>%
+  step(trace = 0, k = nrow(data) %>% log)
+```
+
+After this, there were still some insignificant predictors remaining. In order to choose the significant ones, stepwise selection --- with BIC as the metric --- was utilized. This resulted in the final model:
 
 <!-- This will render correctly if knitted to pdf -->
 \begin{align*}
@@ -38,3 +77,37 @@ This resulted in the final model:
 &+ \beta_5 \texttt{Efficiency}^2 \\
 &+ \epsilon
 \end{align*}
+
+A summary of the table can be seen below:
+
+<!-- im having trouble adding figure caption to this -->
+```{r final_mod_sum, fig.cap="Final Model Summary"}
+
+# prints model summary in table format
+summary(final_model) %>%
+  pander::pander()
+```
+
+Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
+
+<!-- I also had the caption issue with this -->
+```{r outliers, fig.cap="Outliers"}
+
+# get residual and leverage from model
+fm_res <- rstandard(final_model)
+fm_lev <- hatvalues(final_model)
+
+# print desired observations
+filter(
+  data,
+  abs(fm_res) > 2,
+  abs(fm_lev) > 2 * mean(fm_lev)
+) %>%
+  select(Name, PriceinUK) %>%
+  knitr::kable(tabel.envir = "figure")
+```
+
+\newpage
+# Code Appendix
+```{r, ref.label=knitr::all_labels(), eval=FALSE, echo=TRUE}
+```
