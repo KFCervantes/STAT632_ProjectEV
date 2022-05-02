@@ -40,7 +40,10 @@ Which characteristics of Electric Vehicles have a significant impact on increasi
 select(data, -Name) %>%
   GGally::ggpairs()
 ```
+<!-- Methods and Results -->
+<!-- Descriptive and inferential statistics -->
 
+<!-- Model Selection Process -->
 In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that had a lot of multicolinearity: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
 <!-- Mention something about VIF with those here -->
 We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
@@ -80,6 +83,7 @@ After this, there were still some insignificant predictors remaining. In order t
 
 A summary of the table can be seen below:
 
+<!-- regression summary table -->
 <!-- im having trouble adding figure caption to this -->
 ```{r final_mod_sum, fig.cap="Final Model Summary"}
 
@@ -90,17 +94,37 @@ summary(final_model) %>%
 
 Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
 
+```{r constant_variance, fig.cap="Residuals vs. Fitted Values Plot for final model"}
+
+# resvfittedval
+high_res <- rstandard(final_model) %>%
+  abs() > 2
+
+ggplot(mapping = aes(final_model$fitted.values, final_model$residuals)) +
+  geom_point(aes(color = high_res)) +
+  geom_smooth(se = F, color = "red") +
+  labs(x = "Fitted Values", y = "Residuals", color = "High Residual")
+```
+
+```{r normality, fig.cap="Q-Q Plot"}
+
+# qqplot
+ggplot(mapping = aes(sample = final_model$residuals)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(x = "Theorhetical Quantiles", y = "Measured Quantiles")
+```
+
 <!-- I also had the caption issue with this -->
 ```{r outliers, fig.cap="Outliers"}
 
-# get residual and leverage from model
-fm_res <- rstandard(final_model)
+# get leverage from model
 fm_lev <- hatvalues(final_model)
 
 # print desired observations
 filter(
   data,
-  abs(fm_res) > 2,
+  high_res,
   abs(fm_lev) > 2 * mean(fm_lev)
 ) %>%
   select(Name, PriceinUK) %>%
