@@ -2,8 +2,12 @@
 title: "Final Paper"
 author: "Kotomi Oda, Kaleb Cervantes, Nikhil Taringonda"
 date: "`r Sys.Date()`"
-output: pdf_document
+output:
+  pdf_document:
+  fig_caption: true
 ---
+
+\newpage
 
 ```{r setup, include=FALSE}
 # sets up default settings for code chunks
@@ -18,6 +22,7 @@ knitr::opts_chunk$set(
 
 # loads necessary libraries
 library(tidyverse)
+library(GGally)
 
 # load cleaned dataset and rename subtitle column
 full_data <- read_csv("Dataset/cleaned_data.csv") %>%
@@ -32,14 +37,22 @@ data <- drop_na(full_data)
 Which characteristics of Electric Vehicles have a significant impact on increasing their price?
 
 <!-- Mention data cleaning and why a large portion of the data was removed? -->
-<!-- Description of data? -->
+<!-- Description of data, coppied from readme -->
+The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA when the numeric parts are parsed out. After the data was cleaned, the following figure was able to be shown.
 
 ```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix"}
 
 # Plots figure 1
-select(data, -Name) %>%
-  GGally::ggpairs()
+select(data, -Name, -PriceinGermany) %>%
+  ggpairs(
+    upper = list(
+      
+      # change font size of correlation stuff
+      continuous = wrap("cor", size = 3)
+    )
+  )
 ```
+
 <!-- Methods and Results -->
 <!-- Descriptive and inferential statistics -->
 
@@ -84,25 +97,27 @@ After this, there were still some insignificant predictors remaining. In order t
 A summary of the table can be seen below:
 
 <!-- regression summary table -->
-<!-- im having trouble adding figure caption to this -->
-```{r final_mod_sum, fig.cap="Final Model Summary"}
+
+```{r final_mod_sum}
 
 # prints model summary in table format
 summary(final_model) %>%
-  pander::pander()
+  pander::pander(caption = "Final Model Summary")
 ```
 
+<!-- Diagnostic Plots -->
 Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
 
 ```{r constant_variance, fig.cap="Residuals vs. Fitted Values Plot for final model"}
 
-# resvfittedval
+# indeces of high residual points
 high_res <- rstandard(final_model) %>%
   abs() > 2
 
+# plot for constant variance
 ggplot(mapping = aes(final_model$fitted.values, final_model$residuals)) +
   geom_point(aes(color = high_res)) +
-  geom_smooth(se = F, color = "red") +
+  geom_smooth(se = F, color = "green", alpha = 0.5) +
   labs(x = "Fitted Values", y = "Residuals", color = "High Residual")
 ```
 
@@ -115,8 +130,10 @@ ggplot(mapping = aes(sample = final_model$residuals)) +
   labs(x = "Theorhetical Quantiles", y = "Measured Quantiles")
 ```
 
-<!-- I also had the caption issue with this -->
-```{r outliers, fig.cap="Outliers"}
+<!-- description and interpretation -->
+<!-- idk what this means -->
+
+```{r outliers}
 
 # get leverage from model
 fm_lev <- hatvalues(final_model)
@@ -128,8 +145,10 @@ filter(
   abs(fm_lev) > 2 * mean(fm_lev)
 ) %>%
   select(Name, PriceinUK) %>%
-  knitr::kable(tabel.envir = "figure")
+  knitr::kable(tabel.envir = "figure", caption = "Outliers")
 ```
+
+<!-- conclusion -->
 
 \newpage
 # Code Appendix
