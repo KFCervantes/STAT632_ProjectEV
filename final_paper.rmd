@@ -1,0 +1,40 @@
+---
+title: "Final Paper"
+author: "Kotomi Oda, Kaleb Cervantes, Nikhil Taringonda"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- Research Question -->
+<!-- Incorporate into introduction? -->
+Which characteristics of Electric Vehicles have a significant impact on increasing their price?
+
+<!-- Mention data cleaning and why a large portion of the data was removed? -->
+<!-- Description of data? -->
+
+In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that had a lot of multicolinearity: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
+<!-- Mention something about VIF with those here -->
+We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
+
+After this, there were still possible transformations needed for the predictors. Initial predictions were found by looking at marginal plots between the predictors and the response. Other transformations of the predictors would be tested and the more accurate predictions would be kept.
+
+There were also possible transformations needed for the response variable. This was done by using a Box-Cox Power Transformation. In this case, we got $\lambda \approx -0.5$, which corresponds to an inverse square root transformation.
+
+<!-- Explain reduction step here, I might add some r output but im not sure yet -->
+
+This resulted in the final model:
+
+<!-- This will render correctly if knitted to pdf -->
+\begin{align*}
+\frac{1}{\sqrt{\texttt{PriceinUK}}} &= \beta_0 \\
+&+ \beta_1 \ln \texttt{Range} \\
+&+ \beta_2 \texttt{TopSpeed} \\
+&+ \beta_3 \texttt{TopSpeed}^2 \\
+&+ \beta_4 \texttt{Efficiency} \\
+&+ \beta_5 \texttt{Efficiency}^2 \\
+&+ \epsilon
+\end{align*}
