@@ -120,8 +120,6 @@ From Table 2, we can see that although the magnitude of the coefficients are sma
 <!-- Diagnostic Plots -->
 Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
 
-From figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
-
 ```{r assump_plots, fig.cap="Plots for Regression Assumptions"}
 
 # indices of high residual points
@@ -144,7 +142,9 @@ gridExtra::grid.arrange(normplot, cvarplot)
 # lmtest::bptest(final_model)
 ```
 
-The next assumption that was checked was normality of residuals. From figure 2, it appears that normality of the residuals is satsified. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statsistic is also larger than $0.95$, the normality condition seems satisfied.
+From figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
+
+The next assumption that was checked was normality of residuals. From figure 2, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statistic is also larger than $0.95$, the normality condition seems satisfied.
 
 <!-- description and interpretation -->
 <!-- idk what this means -->
@@ -153,16 +153,62 @@ The next assumption that was checked was normality of residuals. From figure 2, 
 
 # get leverage from model
 fm_lev <- hatvalues(final_model)
+high_lev <- abs(fm_lev) > 2 * mean(fm_lev)
 
 # print desired observations
 filter(
   data,
   high_res,
-  abs(fm_lev) > 2 * mean(fm_lev)
+  high_lev
 ) %>%
   select(Name, PriceinUK) %>%
   knitr::kable(tabel.envir = "figure", caption = "Outliers")
 ```
+
+<!-- This is to answer a question that was asked during presentation -->
+We can remodel without the outlier points to see what the results are.
+
+```{r no_outliers, fig.cap="Refitted Diagnostic Plots without Outliers"}
+
+# subset of data without outliers
+no_outlier_data <- filter(data, !(high_res & high_lev))
+
+# refit model
+no_outlier_model <- lm(
+  1 / sqrt(PriceinUK) ~
+    log(Range) +
+    poly(TopSpeed, 2, raw = T) +
+    poly(Efficiency, 2, raw = T),
+  no_outlier_data
+)
+
+# new high residual points
+high_res2 <- rstandard(no_outlier_model) %>%
+  abs() > 2
+
+normplot2 <- ggplot(mapping = aes(sample = no_outlier_model$residuals)) +
+  geom_qq() +
+  geom_qq_line() +
+  labs(x = "Theorhetical Quantiles", y = "Measured Quantiles")
+
+cvarplot2 <- ggplot(
+  mapping = aes(no_outlier_model$fitted.values, no_outlier_model$residuals)
+) +
+  geom_line(stat = "smooth", method = "loess", alpha = 0.4, color = "purple", size = 1) +
+  geom_point(aes(color = high_res2)) +
+  labs(x = "Fitted Values", y = "Residuals", color = "High Residual")
+
+gridExtra::grid.arrange(normplot2, cvarplot2)
+
+# shapiro.test(no_oulier_model$residuals)
+# lmtest::bptest(no_oulier_model)
+```
+
+From the diagnostic plots in figure 3, the results appear similar. It appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.373 \cdot 10^{-4}$. This is slightly higher than in the original model, but is still highly significant and indicates heteroscadicity in the model's residuals.
+
+The next assumption that was checked was normality of residuals. It appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97688$ and $p$-value $0.0328$. This is slightly higher than in the original model and appears normal for similar reasons.
+
+So removing the outliers and refitting the models does not seem to have a significant effect on the diagnostics.
 
 <!-- conclusion -->
 
