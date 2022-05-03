@@ -40,7 +40,9 @@ Which characteristics of Electric Vehicles have a significant impact on increasi
 <!-- Description of data, coppied from readme -->
 The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA when the numeric parts are parsed out. After the data was cleaned, the following figure was able to be shown.
 
-Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kWh. Since all vehicles were of the same type, only the battery capacity component was needed. This numeric variable was stripped and renamed to `battery_capacity`.
+Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There was also `PriceinGermany`, however since this was also a type of the response we wanted, this was decided to be an alternate response variable. This left the columns `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `Numberofseas` as most of the predictors.
+
+There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kWh. Since all vehicles were of the same type, only the battery capacity component was needed. This numeric variable was stripped and renamed to `battery_capacity`.
 
 ```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix"}
 
