@@ -1,13 +1,27 @@
 ---
 title: "Final Paper"
 author: "Kotomi Oda, Kaleb Cervantes, Nikhil Taringonda"
+
+# prints current date
 date: "`r Sys.Date()`"
+
+# outputs as pdf with captions for figures
 output:
   pdf_document:
   fig_caption: true
+  
+# numbering at top of page only
+header-includes:
+  \usepackage{fancyhdr}
+  \pagestyle{fancy}
+  \fancyhead[R]{\thepage}
+  \fancyfoot{}
 ---
 
 \newpage
+
+<!-- ignore title page count -->
+\setcounter{page}{1}
 
 ```{r setup, include=FALSE}
 # sets up default settings for code chunks
