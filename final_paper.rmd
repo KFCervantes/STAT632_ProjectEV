@@ -1,6 +1,15 @@
 ---
 title: "Final Paper"
-author: "Kotomi Oda, Kaleb Cervantes, Nikhil Taringonda"
+author: |
+  | Kotomi Oda
+  | Kaleb Cervantes
+  | Nikhil Taringonda
+  |
+  | Department of Statistics and Biostatistics: California State University: East Bay
+  |
+  | STAT 632: Linear and Logistic Regression
+  |
+  | Dr. Joshua Kerr
 
 # prints current date
 date: "`r Sys.Date()`"
@@ -13,15 +22,16 @@ output:
 # numbering at top of page only
 header-includes:
   \usepackage{fancyhdr}
+  \pagenumbering{gobble}
   \pagestyle{fancy}
   \fancyhead[R]{\thepage}
   \fancyfoot{}
 ---
 
 \newpage
+\pagenumbering{arabic}
 
 <!-- ignore title page count -->
-\setcounter{page}{1}
 
 ```{r setup, include=FALSE}
 # sets up default settings for code chunks
