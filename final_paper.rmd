@@ -87,6 +87,9 @@ select(data, -Name, -PriceinGermany) %>%
   )
 ```
 
+It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables
+<!-- I need to think of how to finish this sentence. -->
+
 <!-- Methods and Results -->
 <!-- Descriptive and inferential statistics -->
 
