@@ -68,22 +68,22 @@ Since we wanted to measure price, the variable `PriceinUK` was chosen to be the 
 
 There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kWh. Since all vehicles were of the same type, only the battery capacity component was needed. This numeric variable was stripped and renamed to `battery_capacity`.
 
-```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix"}
+<!-- Really long chunk settings to fix column label font size -->
+<!-- yes thats what most of it is for -->
+```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix", out.height="400px", out.width="400px", fig.height=11, fig.width=11, fig.align="center"}
 
 # Plots figure 1
 select(data, -Name, -PriceinGermany) %>%
   ggpairs(
     
     # change font size of correlation stuff
-    upper = list(continuous = wrap("cor", size = 3)),
+    upper = list(continuous = wrap("cor", size = 5)),
     
     # changes point size
-    lower = list(continuous = wrap("points", size = 0.5)),
+    lower = list(continuous = wrap("points", size = 1)),
     
     # removes cluttered axis ticks
     axisLabels = "none"
-    
-    # I need to figure out how to decrease column font size
   )
 ```
 
