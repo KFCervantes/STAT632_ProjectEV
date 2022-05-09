@@ -240,6 +240,7 @@ The next assumption that was checked was normality of residuals. It appears that
 So removing the outliers and refitting the models does not seem to have a significant effect on the diagnostics.
 
 <!-- conclusion -->
+We started the full model with 8 predictors and after applying transformations on the model, only 3 predictors(`Range`, `TopSpeed`, `Efficiency`) are significant from the dataset. This model predicts the prices of electric vehicles with slight margin of errors with better normality, constant-variance and r-squared over the full and reduced models. Our model also reduced the multicollinearity significantly. Since the model doesn’t account for only high priced cars, it may not be a good fit for cars which are high in price. This is because, the margin of error increases with an increase in price of the car due to other multiple factors. For future study: an increase in number of observations and predictors may lead us to achieve better models for prediction.
 
 \newpage
 # Code Appendix
