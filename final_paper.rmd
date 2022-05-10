@@ -58,15 +58,15 @@ full_data <- read_csv("Dataset/cleaned_data.csv") %>%
 data <- drop_na(full_data)
 ```
 
-<!-- Research Question -->
-<!-- Incorporate into introduction? -->
-Which characteristics of Electric Vehicles have a significant impact on increasing their price?
+<!-- Introduction -->
+<!-- Which characteristics of Electric Vehicle have a significant inpact on increasing their price? Nowadays, we started to see EVs on the car markets more often and it is getting our attentions. However we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to define which predict variable has more impact on its price. -->
+Which characteristics of Electric Vehicles have a significant impact on increasing their price? Nowadays, we see Electric Vehicles on the car market more often and it is getting our attention.However, we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to ask which characteristics of electric vehicles have a significant impact on their price.
 
 <!-- Mention data cleaning and why a large portion of the data was removed? -->
 <!-- Description of data, coppied from readme -->
-The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA when the numeric parts are parsed out.
+The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. In some rows, the string `"-"` was used to denote a null value. These values were converted to `NA` during the data cleaning process.
 
-Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There was also `PriceinGermany`, however since this was also a type of the response we wanted, this was decided to be an alternate response variable. This left the columns `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `NumberofseaTs` as most of the predictors.
+Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There data also contained `PriceinGermany`, which was another form of the desired response. Since we only needed to use one response variable, `PriceinGermany` would be consisdered an alternate response while `PriceinUK` would be the main response. This left the columns `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `NumberofseaTs` as most of the predictors.
 
 There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kilowatt hours (kWh). Since all vehicles were of the same type, only the battery capacity component was useful This numeric variable was stripped and renamed to `battery_capacity`. After this cleaning was done, the following figure was produced.
 
