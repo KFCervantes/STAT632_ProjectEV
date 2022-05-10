@@ -66,9 +66,9 @@ Which characteristics of Electric Vehicles have a significant impact on increasi
 <!-- Description of data, coppied from readme -->
 The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. Some of these strings have the value “-” which indicates a null value. As such, these will be converted to NA when the numeric parts are parsed out.
 
-Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There was also `PriceinGermany`, however since this was also a type of the response we wanted, this was decided to be an alternate response variable. This left the columns `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `Numberofseas` as most of the predictors.
+Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There was also `PriceinGermany`, however since this was also a type of the response we wanted, this was decided to be an alternate response variable. This left the columns `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `NumberofseaTs` as most of the predictors.
 
-There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kWh. Since all vehicles were of the same type, only the battery capacity component was needed. This numeric variable was stripped and renamed to `battery_capacity`. After this cleaning was done, the following figure was produced.
+There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kilowatt hours (kWh). Since all vehicles were of the same type, only the battery capacity component was useful This numeric variable was stripped and renamed to `battery_capacity`. After this cleaning was done, the following figure was produced.
 
 <!-- Really long chunk settings to fix column label font size -->
 <!-- yes thats what most of it is for -->
@@ -89,14 +89,15 @@ select(data, -Name, -PriceinGermany) %>%
   )
 ```
 
-It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables
+It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset.
 <!-- I need to think of how to finish this sentence. -->
 
 <!-- Methods and Results -->
 <!-- Descriptive and inferential statistics -->
 
 <!-- Model Selection Process -->
-In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that had a lot of multicolinearity: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
+In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that were highly correlated: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
+
 <!-- Mention something about VIF with those here -->
 We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
 
@@ -238,9 +239,9 @@ gridExtra::grid.arrange(normplot2, cvarplot2)
 
 From the diagnostic plots in Figure 3, the results appear similar. It appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.373 \cdot 10^{-4}$. This is slightly higher than in the original model, but is still highly significant and indicates heteroscadicity in the model's residuals.
 
-The next assumption that was checked was normality of residuals. It appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97688$ and $p$-value $0.0328$. This is slightly higher than in the original model and appears normal for similar reasons.
+From looking at the plot in Figure 3, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97688$ and $p$-value $0.0328$. This is slightly higher than in the original model and appears normal for similar reasons.
 
-So removing the outliers and refitting the models does not seem to have a significant effect on the diagnostics.
+The plots diagnostic plots and hypothesis tests for the model with and without the outliers appear very similar. As such, it appears that removing outliers and refitting the model does not yield a significant effect.
 
 <!-- conclusion -->
 We started the full model with 8 predictors and after applying transformations on the model, only 3 predictors(`Range`, `TopSpeed`, `Efficiency`) are significant from the dataset. This model predicts the prices of electric vehicles with slight margin of errors with better normality, constant-variance and r-squared over the full and reduced models. Our model also reduced the multicollinearity significantly. Since the model doesn’t account for only high priced cars, it may not be a good fit for cars which are high in price. This is because, the margin of error increases with an increase in price of the car due to other multiple factors. For future study: an increase in number of observations and predictors may lead us to achieve better models for prediction.
