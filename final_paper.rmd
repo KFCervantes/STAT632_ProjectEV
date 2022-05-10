@@ -1,5 +1,5 @@
 ---
-title: "Final Paper"
+title: "Project EV: Factors Effecting the Price of an Electric Vehicle"
 author: |
   | Kotomi Oda
   | Kaleb Cervantes
@@ -250,3 +250,6 @@ We started the full model with 8 predictors and after applying transformations o
 # Code Appendix
 ```{r, ref.label=knitr::all_labels(), eval=FALSE, echo=TRUE}
 ```
+
+## Github Repository
+https://github.com/KFCervantes/STAT632_ProjectEV/
