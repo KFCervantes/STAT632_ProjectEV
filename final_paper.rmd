@@ -147,7 +147,6 @@ summary(final_model) %>%
 From Table 2, we can see that although the magnitude of the coefficients are small, they are significant. This makes sense because the model is linear on an inverse square root scale.
 
 <!-- Diagnostic Plots -->
-Using this model, we decided to recognize the observations that were both high residual and high leverage. These points were considered outliers.
 
 ```{r assump_plots, fig.cap="Plots for Regression Assumptions"}
 
@@ -171,12 +170,16 @@ gridExtra::grid.arrange(normplot, cvarplot)
 # lmtest::bptest(final_model)
 ```
 
-From figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
+From Figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
 
-The next assumption that was checked was normality of residuals. From figure 2, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statistic is also larger than $0.95$, the normality condition seems satisfied.
+The next assumption that was checked was normality of residuals. From Figure 2, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statistic is also larger than $0.95$, the normality condition seems satisfied.
 
 <!-- description and interpretation -->
 <!-- idk what this means -->
+The model provided the following interpretations. With all other predictors in the model held fixed, the interpretation of the estimated `Range` is that a unit increase in `log(Range)` is associated with an decrease in `1/sqrt(PriceinUK)` by $0.0005637$. With `Range` and `Efficiency` fixed, an increase in `TopSpeed` is associated with quadratic growth in `1/sqrt(PriceinUK)`. With `Range` and `TopSpeed` fixed, an increase in `Efficiency` is associated with quadratic growth in `1/sqrt(PriceinUK)`. It is important to note that the quadratic growth in the previous two interpretations is due to the positive sign of the coefficients for the square terms in the model.
+
+<!-- outliers -->
+We were also curious about the effects of outliers on our model. For our purposes, outliers were defined as points having an absolute leverage higher than twice the mean, and having an absolute standardized residual higher than 2. These outliers were identified in Table 3.
 
 ```{r outliers}
 
@@ -195,7 +198,7 @@ filter(
 ```
 
 <!-- This is to answer a question that was asked during presentation -->
-We can remodel without the outlier points to see what the results are.
+Now that the outliers are identified, the model will be refit without them to see the effect.
 
 ```{r no_outliers, fig.cap="Refitted Diagnostic Plots without Outliers"}
 
@@ -233,7 +236,7 @@ gridExtra::grid.arrange(normplot2, cvarplot2)
 # lmtest::bptest(no_oulier_model)
 ```
 
-From the diagnostic plots in figure 3, the results appear similar. It appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.373 \cdot 10^{-4}$. This is slightly higher than in the original model, but is still highly significant and indicates heteroscadicity in the model's residuals.
+From the diagnostic plots in Figure 3, the results appear similar. It appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.373 \cdot 10^{-4}$. This is slightly higher than in the original model, but is still highly significant and indicates heteroscadicity in the model's residuals.
 
 The next assumption that was checked was normality of residuals. It appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97688$ and $p$-value $0.0328$. This is slightly higher than in the original model and appears normal for similar reasons.
 
