@@ -88,8 +88,7 @@ select(data, -Name, -PriceinGermany) %>%
   )
 ```
 
-It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset.
-<!-- I need to think of how to finish this sentence. -->
+It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset. This resulted in the cleaned dataset having 124 rows and 11 columns.
 
 <!-- Methods and Results -->
 <!-- Descriptive and inferential statistics -->
