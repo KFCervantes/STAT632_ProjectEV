@@ -60,7 +60,7 @@ data <- drop_na(full_data)
 
 <!-- Introduction -->
 <!-- Which characteristics of Electric Vehicle have a significant inpact on increasing their price? Nowadays, we started to see EVs on the car markets more often and it is getting our attentions. However we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to define which predict variable has more impact on its price. -->
-Which characteristics of Electric Vehicles have a significant impact on increasing their price? Nowadays, we see Electric Vehicles on the car market more often and it is getting our attention.However, we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to ask which characteristics of electric vehicles have a significant impact on their price.
+Our research is about Electric Vehicles. Nowadays, we see Electric Vehicles on the car market more often and it is getting our attention. However, we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to ask which characteristics of electric vehicles have a significant impact on their price.
 
 <!-- Mention data cleaning and why a large portion of the data was removed? -->
 <!-- Description of data, coppied from readme -->
@@ -134,7 +134,7 @@ After this, there were still some insignificant predictors remaining. In order t
 &+ \epsilon
 \end{align*}
 
-A summary of the table can be seen below:
+The model summary output can be seen below:
 
 <!-- regression summary table -->
 
