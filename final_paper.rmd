@@ -67,11 +67,13 @@ The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTU
 
 Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There data also contained `PriceinGermany`, which was another form of the desired response. Since we only needed to use one response variable, `PriceinGermany` would be consisdered an alternate response while `PriceinUK` would be the main response. Our potential predictor variables are `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `NumberofSeats`.
 
-There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kilowatt hours (kWh). Since all vehicles were of the same type, only the battery capacity component was useful. This numeric variable was stripped and renamed to `battery_capacity`. After this cleaning was done, the following figure was produced.
+There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kilowatt hours (kWh). Since all vehicles were of the same type, only the battery capacity component was useful. This numeric variable was stripped and renamed to `battery_capacity`.
+
+It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset. This resulted in the cleaned dataset having 124 rows and 11 columns.
 
 <!-- Really long chunk settings to fix column label font size -->
 <!-- yes thats what most of it is for -->
-```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix", out.height="400px", out.width="400px", fig.height=11, fig.width=11, fig.align="center"}
+```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix", out.height="350px", out.width="350px", fig.height=11, fig.width=11, fig.align="center"}
 
 # Plots figure 1
 select(data, -Name, -PriceinGermany) %>%
@@ -88,16 +90,12 @@ select(data, -Name, -PriceinGermany) %>%
   )
 ```
 
-It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset. This resulted in the cleaned dataset having 124 rows and 11 columns.
-
 <!-- Methods and Results -->
 <!-- Descriptive and inferential statistics -->
+From the scatterplot matrix some of the predictors are right skewed. From Figure 1 we were able to recognize two pairs of variables that were highly correlated: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
 
 <!-- Model Selection Process -->
-In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. From this, the scatterplot matrix, and the correlation matrix, we were able to recognize two pairs of variables that were highly correlated: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
-
-<!-- Mention something about VIF with those here -->
-We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
+In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
 
 After this, there were still possible transformations needed for the predictors. Initial predictions were found by looking at marginal plots between the predictors and the response. Other transformations of the predictors would be tested and the more accurate predictions would be kept.
 
