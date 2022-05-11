@@ -44,6 +44,71 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r cleaning}
+
+library(magrittr)
+library(stringr)
+
+# load in data
+data <- "Dataset/Cheapestelectriccars-EVDatabase.csv" %>%
+  read.csv
+
+# convert selected columns to float
+data[c("Subtitle", "Acceleration")] %<>%
+  
+  # define new function and apply it on every value in the column
+  lapply(
+    
+    # x is the string
+    function (x)
+      x %>%
+      
+      # keep substring consisting of digits and decimal points
+      str_extract("[\\.\\d]+") %>%
+      
+      # convert string to float
+      as.numeric
+  )
+
+# convert selected columns to int
+data[
+  c(
+    "TopSpeed",
+    "Range",
+    "Efficiency",
+    "FastChargeSpeed",
+    "PriceinGermany",
+    "PriceinUK"
+  )
+] %<>%
+  
+  # define new function and apply it on every value in the column
+  lapply(
+    
+    # x is the string
+    function (x)
+      x %>%
+      
+      # remove comma from string
+      str_remove(",") %>%
+      
+      # keep substring consisting of digits
+      str_extract("\\d+") %>%
+      
+      # convert string to int
+      as.integer
+  )
+
+# write cleaned data into csv file
+data %>%
+  write.csv(
+    "Dataset/cleaned_data.csv",
+    
+    # write without numeric index
+    row.names = F
+  )
+```
+
 ```{r loading}
 
 # loads necessary libraries
@@ -60,27 +125,32 @@ data <- drop_na(full_data)
 
 <!-- Introduction -->
 Our research is about Electric Vehicles. Nowadays, we see Electric Vehicles on the car market more often and it is getting our attention. However, we once all wonder why the electric cars are so costly and what is the reasonable price for us to spend on one. Our curiosity led us to ask which characteristics of electric vehicles have a significant impact on their price.
+\newline
 
 <!-- Mention data cleaning and why a large portion of the data was removed? -->
 <!-- Description of data, coppied from readme -->
 The dataset we used was the “Cheapest Electric Cars” from Kaggle user KOUSTUBHK. This user scraped data from https://ev-database.org/ in August 2021. The dataset contains 180 rows and 11 columns. Some of the columns were stored as strings, but clearly contained numeric substrings that were useful predictors. In some rows, the string `"-"` was used to denote a null value. These values were converted to `NA` during the data cleaning process.
+\newline
 
 Since we wanted to measure price, the variable `PriceinUK` was chosen to be the response variable. There data also contained `PriceinGermany`, which was another form of the desired response. Since we only needed to use one response variable, `PriceinGermany` would be consisdered an alternate response while `PriceinUK` would be the main response. Our potential predictor variables are `Name`, `Acceleration`, `TopSpeed`, `Range`, `Efficiency`, `FastChargeSpeed`, `Drive`, and `NumberofSeats`.
+\newline
 
 There is still one remaining predictor. Originally, the data contained the column `Subtitle`. This column contained information about the type of vehicle as well as its battery capacity in kilowatt hours (kWh). Since all vehicles were of the same type, only the battery capacity component was useful. This numeric variable was stripped and renamed to `battery_capacity`.
+\newline
 
 It is important to note that out of the 180 rows in the dataset, only 124 of them were complete. This is a problem because many of the missing values were for the response variables. As such, many of the missing columns had to be dropped from the dataset. This resulted in the cleaned dataset having 124 rows and 11 columns.
+\newline
 
 <!-- Really long chunk settings to fix column label font size -->
 <!-- yes thats what most of it is for -->
-```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix", out.height="350px", out.width="350px", fig.height=11, fig.width=11, fig.align="center"}
+```{r matrix_plots, fig.cap="Correlation/Scatterplot/Density Matrix", out.height="450px", out.width="450px", fig.height=11, fig.width=11, fig.align="center"}
 
 # Plots figure 1
 select(data, -Name, -PriceinGermany) %>%
   ggpairs(
     
     # change font size of correlation stuff
-    upper = list(continuous = wrap("cor", size = 5)),
+    upper = list(continuous = wrap("cor", size = 6.5)),
     
     # changes point size
     lower = list(continuous = wrap("points", size = 1)),
@@ -91,15 +161,18 @@ select(data, -Name, -PriceinGermany) %>%
 ```
 
 <!-- Methods and Results -->
-<!-- Descriptive and inferential statistics -->
 From the scatterplot matrix some of the predictors are right skewed. From Figure 1 we were able to recognize two pairs of variables that were highly correlated: `batery_capacity` and `Range`, `Acceleration` and `TopSpeed`.
+\newline
 
 <!-- Model Selection Process -->
-In order to select the model, we began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
+Since we are predicting price as a function of other predictors, we chose to fit a Multiple Linear Regression model. We began with a full --- and untransformed --- additive model. The purpose of this were to recognize which variables introduced a lot of multicolinearity. We ended up dropping the variables `battery_capacity` and `Acceleration`. This was because these predictors were less accurate in later parts of the process than `Range` and `TopSpeed` respectively.
+\newline
 
 After this, there were still possible transformations needed for the predictors. Initial predictions were found by looking at marginal plots between the predictors and the response. Other transformations of the predictors would be tested and the more accurate predictions would be kept.
+\newline
 
 There were also possible transformations needed for the response variable. This was done by using a Box-Cox Power Transformation. In this case, we got $\lambda \approx -0.5$, which corresponds to an inverse square root transformation.
+\newline
 
 ```{r selction}
 
@@ -118,6 +191,7 @@ final_model <- lm(
 ```
 
 After this, there were still some insignificant predictors remaining. In order to choose the significant ones, stepwise selection --- with BIC as the metric --- was utilized. This resulted in the final model:
+\newline
 
 <!-- This will render correctly if knitted to pdf -->
 \begin{align*}
@@ -130,18 +204,21 @@ After this, there were still some insignificant predictors remaining. In order t
 &+ \epsilon
 \end{align*}
 
-The model summary output can be seen below:
-
 <!-- regression summary table -->
-
+<!-- manual table caption -->
+\begin{center}
+Table 1: Final Model Coefficient Summary
+\end{center}
 ```{r final_mod_sum}
 
 # prints model summary in table format
+# results in tables 1/2
 summary(final_model) %>%
-  pander::pander(caption = "Final Model Summary")
+  pander::pander(caption = "Final Model Error")
 ```
 
-From Table 2, we can see that although the magnitude of the coefficients are small, they are significant. This makes sense because the model is linear on an inverse square root scale.
+From Table 1, we can see that although the magnitude of the coefficients are small, they are significant. This makes sense because the model is linear on an inverse square root scale.
+\newline
 
 <!-- Diagnostic Plots -->
 
@@ -168,15 +245,19 @@ gridExtra::grid.arrange(normplot, cvarplot)
 ```
 
 From Figure 2, it appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.086 \cdot 10^{-4}$. This is highly significant and indicates heteroscadicity in the model's residuals.
+\newline
 
 The next assumption that was checked was normality of residuals. From Figure 2, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97628$ and $p$-value $0.02778$. The $p$-value is significant for $\alpha = 0.05$, but not for $\alpha = 0.01$. Since the test statistic is also larger than $0.95$, the normality condition seems satisfied.
+\newline
 
 <!-- description and interpretation -->
 <!-- idk what this means -->
 The model provided the following interpretations. With all other predictors in the model held fixed, the interpretation of the estimated `Range` is that a unit increase in `log(Range)` is associated with an decrease in `1/sqrt(PriceinUK)` by $0.0005637$. With `Range` and `Efficiency` fixed, an increase in `TopSpeed` is associated with quadratic growth in `1/sqrt(PriceinUK)`. With `Range` and `TopSpeed` fixed, an increase in `Efficiency` is associated with quadratic growth in `1/sqrt(PriceinUK)`. It is important to note that the quadratic growth in the previous two interpretations is due to the positive sign of the coefficients for the square terms in the model.
+\newline
 
 <!-- outliers -->
 We were also curious about the effects of outliers on our model. For our purposes, outliers were defined as points having an absolute leverage higher than twice the mean, and having an absolute standardized residual higher than 2. These outliers were identified in Table 3.
+\newline
 
 ```{r outliers}
 
@@ -196,6 +277,7 @@ filter(
 
 <!-- This is to answer a question that was asked during presentation -->
 Now that the outliers are identified, the model will be refit without them to see the effect.
+\newline
 
 ```{r no_outliers, fig.cap="Refitted Diagnostic Plots without Outliers"}
 
@@ -234,10 +316,13 @@ gridExtra::grid.arrange(normplot2, cvarplot2)
 ```
 
 From the diagnostic plots in Figure 3, the results appear similar. It appears that the constant variance requirement is mostly satisfied. However, when a studentized Breusch-Pagan test was used, the resulting $p$-value was $1.373 \cdot 10^{-4}$. This is slightly higher than in the original model, but is still highly significant and indicates heteroscadicity in the model's residuals.
+\newline
 
 From looking at the plot in Figure 3, it appears that normality of the residuals is satisfied. In order to check, a Shapiro-Wilk normality test was used. This yielded test statistic $W = 0.97688$ and $p$-value $0.0328$. This is slightly higher than in the original model and appears normal for similar reasons.
+\newline
 
 The plots diagnostic plots and hypothesis tests for the model with and without the outliers appear very similar. As such, it appears that removing outliers and refitting the model does not yield a significant effect.
+\newline
 
 <!-- conclusion -->
 We started the full model with 8 predictors and after applying transformations on the model, only 3 predictors(`Range`, `TopSpeed`, `Efficiency`) are significant from the dataset. This model predicts the prices of electric vehicles with slight margin of errors with better normality, constant-variance and r-squared over the full and reduced models. Our model also reduced the multicollinearity significantly. Since the model doesn’t account for only high priced cars, it may not be a good fit for cars which are high in price. This is because, the margin of error increases with an increase in price of the car due to other multiple factors. For future study: an increase in number of observations and predictors may lead us to achieve better models for prediction.
